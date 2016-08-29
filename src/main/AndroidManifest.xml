@@ -15,6 +15,13 @@
 
         <activity android:name=".backstack.BackstackActivity">
         </activity>
+
+        <activity android:name=".backstack.BackstackActivityWithParent">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.accengage.samples.backstack.BackstackActivity"/>
+        </activity>
+
     </application>
 
 </manifest>

@@ -10,13 +10,20 @@
             android:key="@string/pref_notif_msg_backstack_enable_key"
             android:title="@string/pref_notif_backstack_enable_title"/>
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_notif_msg_backstack_with_parent_enable_key"
+            android:title="@string/pref_notif_backstack_with_parent_enable_title"
+            android:dependency="@string/pref_notif_msg_backstack_enable_key"
+            android:disableDependentsState="true"/>
+
         <ListPreference
             android:key="@string/pref_notif_msg_backstack_amount_key"
             android:title="@string/pref_notif_backstack_amount_title"
             android:entries="@array/pref_notif_backstack_list_titles"
             android:entryValues="@array/pref_notif_backstack_list_values"
             android:defaultValue="3"
-            android:dependency="@string/pref_notif_msg_backstack_enable_key"/>
+            android:dependency="@string/pref_notif_msg_backstack_with_parent_enable_key"/>
 
         <CheckBoxPreference
             android:key="@string/pref_notif_msg_backstack_handle_url_key"
@@ -35,13 +42,20 @@
             android:key="@string/pref_notif_button1_backstack_enable_key"
             android:title="@string/pref_notif_backstack_enable_title"/>
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_notif_button1_backstack_with_parent_enable_key"
+            android:title="@string/pref_notif_backstack_with_parent_enable_title"
+            android:dependency="@string/pref_notif_button1_backstack_enable_key"
+            android:disableDependentsState="true"/>
+
         <ListPreference
             android:key="@string/pref_notif_button1_backstack_amount_key"
             android:title="@string/pref_notif_backstack_amount_title"
             android:entries="@array/pref_notif_backstack_list_titles"
             android:entryValues="@array/pref_notif_backstack_list_values"
             android:defaultValue="2"
-            android:dependency="@string/pref_notif_button1_backstack_enable_key"/>
+            android:dependency="@string/pref_notif_button1_backstack_with_parent_enable_key"/>
 
         <CheckBoxPreference
             android:key="@string/pref_notif_button1_backstack_handle_url_key"
@@ -60,13 +74,20 @@
             android:key="@string/pref_notif_button2_backstack_enable_key"
             android:title="@string/pref_notif_backstack_enable_title"/>
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_notif_button2_backstack_with_parent_enable_key"
+            android:title="@string/pref_notif_backstack_with_parent_enable_title"
+            android:dependency="@string/pref_notif_button2_backstack_enable_key"
+            android:disableDependentsState="true"/>
+
         <ListPreference
             android:key="@string/pref_notif_button2_backstack_amount_key"
             android:title="@string/pref_notif_backstack_amount_title"
             android:entries="@array/pref_notif_backstack_list_titles"
             android:entryValues="@array/pref_notif_backstack_list_values"
             android:defaultValue="1"
-            android:dependency="@string/pref_notif_button2_backstack_enable_key"/>
+            android:dependency="@string/pref_notif_button2_backstack_with_parent_enable_key"/>
 
         <CheckBoxPreference
             android:key="@string/pref_notif_button2_backstack_handle_url_key"

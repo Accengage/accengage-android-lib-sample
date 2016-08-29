@@ -6,19 +6,14 @@ import android.widget.TextView;
 
 import com.accengage.samples.R;
 
-public class BackstackActivity extends Activity {
-
-    public static final String EXTRA_PARAM_KEY = "BACKSTACK_ACTIVITY_EXTRA_PARAM_KEY";
+public class BackstackActivityWithParent extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_backstack);
 
-        String extraParam = getIntent().getStringExtra(EXTRA_PARAM_KEY);
-        if (extraParam == null) extraParam = "no extras";
-
         TextView label = (TextView) findViewById(R.id.tv_label);
-        label.setText(BackstackActivity.class.getSimpleName() + " " + extraParam);
+        label.setText(BackstackActivityWithParent.class.getSimpleName());
     }
 }
