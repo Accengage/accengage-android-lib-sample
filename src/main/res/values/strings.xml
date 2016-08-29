@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">A4SSamples</string>
+    <string name="title_activity_back_stack_settings">Settings</string>
+
+
+    <string name="pref_notif_msg_backstack_enable_key">pref_notif_msg_backstack_enable_key</string>
+    <string name="pref_notif_msg_backstack_amount_key">pref_notif_msg_backstack_amount_key</string>
+    <string name="pref_notif_msg_backstack_handle_url_key">pref_notif_msg_backstack_handle_url_key</string>
+
+    <string name="pref_notif_button1_backstack_enable_key">pref_notif_button1_backstack_enable_key</string>
+    <string name="pref_notif_button1_backstack_amount_key">pref_notif_button1_backstack_amount_key</string>
+    <string name="pref_notif_button1_backstack_handle_url_key">pref_notif_button1_backstack_handle_url_key</string>
+
+    <string name="pref_notif_button2_backstack_enable_key">pref_notif_button2_backstack_enable_key</string>
+    <string name="pref_notif_button2_backstack_amount_key">pref_notif_button2_backstack_amount_key</string>
+    <string name="pref_notif_button2_backstack_handle_url_key">pref_notif_button2_backstack_handle_url_key</string>
+
+    <string name="pref_notif_backstack_enable_title">Back stack</string>
+    <string name="pref_notif_backstack_amount_title">Amount of back stack activities</string>
+    <string name="pref_notif_backstack_handle_url_title">Handle a rich push url</string>
+
 </resources>

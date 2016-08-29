@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Notifications"
+        android:key="pref_notif_category">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_notif_msg_backstack_enable_key"
+            android:title="@string/pref_notif_backstack_enable_title"/>
+
+        <ListPreference
+            android:key="@string/pref_notif_msg_backstack_amount_key"
+            android:title="@string/pref_notif_backstack_amount_title"
+            android:entries="@array/pref_notif_backstack_list_titles"
+            android:entryValues="@array/pref_notif_backstack_list_values"
+            android:defaultValue="3"
+            android:dependency="@string/pref_notif_msg_backstack_enable_key"/>
+
+        <CheckBoxPreference
+            android:key="@string/pref_notif_msg_backstack_handle_url_key"
+            android:title="@string/pref_notif_backstack_handle_url_title"
+            android:defaultValue="false"
+            android:dependency="@string/pref_notif_msg_backstack_enable_key"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Notification button#1"
+        android:key="pref_notif_button1_category">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_notif_button1_backstack_enable_key"
+            android:title="@string/pref_notif_backstack_enable_title"/>
+
+        <ListPreference
+            android:key="@string/pref_notif_button1_backstack_amount_key"
+            android:title="@string/pref_notif_backstack_amount_title"
+            android:entries="@array/pref_notif_backstack_list_titles"
+            android:entryValues="@array/pref_notif_backstack_list_values"
+            android:defaultValue="2"
+            android:dependency="@string/pref_notif_button1_backstack_enable_key"/>
+
+        <CheckBoxPreference
+            android:key="@string/pref_notif_button1_backstack_handle_url_key"
+            android:title="@string/pref_notif_backstack_handle_url_title"
+            android:defaultValue="false"
+            android:dependency="@string/pref_notif_button1_backstack_enable_key"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Notification button#2"
+        android:key="pref_notif_button2_category">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_notif_button2_backstack_enable_key"
+            android:title="@string/pref_notif_backstack_enable_title"/>
+
+        <ListPreference
+            android:key="@string/pref_notif_button2_backstack_amount_key"
+            android:title="@string/pref_notif_backstack_amount_title"
+            android:entries="@array/pref_notif_backstack_list_titles"
+            android:entryValues="@array/pref_notif_backstack_list_values"
+            android:defaultValue="1"
+            android:dependency="@string/pref_notif_button2_backstack_enable_key"/>
+
+        <CheckBoxPreference
+            android:key="@string/pref_notif_button2_backstack_handle_url_key"
+            android:title="@string/pref_notif_backstack_handle_url_title"
+            android:defaultValue="false"
+            android:dependency="@string/pref_notif_button2_backstack_enable_key"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
