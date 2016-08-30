@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 24
@@ -19,8 +20,27 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:support-v4:24.2.0'
+    compile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
+    //compile 'com.ad4screen.sdk:A4SSDK:3.5.0.1'
+}
+
+publishing {
+    publications {
+        debug(MavenPublication) {
+            groupId 'com.accengage.samples'
+            artifactId 'A4SSamples'
+            version 'SNAPSHOT'
+            artifact 'build/outputs/aar/A4SSamples-debug.aar'
+        }
+        release(MavenPublication) {
+            groupId 'com.accengage.samples'
+            artifactId 'A4SSamples'
+            version 'SNAPSHOT'
+            artifact 'build/outputs/aar/A4SSamples-release.aar'
+        }
+    }
 }

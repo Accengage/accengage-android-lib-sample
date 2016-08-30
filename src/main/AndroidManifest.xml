@@ -7,16 +7,16 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.accengage.samples.MainActivity">
         </activity>
 
-        <activity android:name=".backstack.BackstackPreferencesActivity">
+        <activity android:name="com.accengage.samples.backstack.BackstackPreferencesActivity">
         </activity>
 
-        <activity android:name=".backstack.BackstackActivity">
+        <activity android:name="com.accengage.samples.backstack.BackstackActivity">
         </activity>
 
-        <activity android:name=".backstack.BackstackActivityWithParent">
+        <activity android:name="com.accengage.samples.backstack.BackstackActivityWithParent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.accengage.samples.backstack.BackstackActivity"/>
