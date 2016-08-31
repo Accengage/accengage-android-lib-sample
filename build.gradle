@@ -19,6 +19,23 @@ android {
     }
 }
 
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    include '**/*.java'
+    failOnError=false
+}
+
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -28,19 +45,42 @@ dependencies {
     //compile 'com.ad4screen.sdk:A4SSDK:3.5.0.1'
 }
 
-publishing {
-    publications {
-        debug(MavenPublication) {
-            groupId 'com.accengage.samples'
-            artifactId 'A4SSamples'
-            version 'SNAPSHOT'
-            artifact 'build/outputs/aar/A4SSamples-debug.aar'
+publishing.repositories {
+    maven {
+        name 'Bintray'
+        url 'https://api.bintray.com/maven/accengage/maven/A4SSamples'
+        credentials {
+            username = bintrayUsername
+            password = bintrayPassword
         }
-        release(MavenPublication) {
-            groupId 'com.accengage.samples'
-            artifactId 'A4SSamples'
-            version 'SNAPSHOT'
-            artifact 'build/outputs/aar/A4SSamples-release.aar'
+    }
+}
+
+publishing.publications {
+    dev(MavenPublication) {
+        groupId 'com.accengage.samples'
+        artifactId 'A4SSamples'
+        version 'SNAPSHOT'
+        artifact 'build/outputs/aar/A4SSamples-debug.aar'
+        artifact androidSourcesJar
+        artifact androidJavadocsJar
+    }
+    prod(MavenPublication) {
+        groupId 'com.accengage.samples'
+        artifactId 'A4SSamples'
+        version sdkVersionName
+        artifact 'build/outputs/aar/A4SSamples-release.aar'
+        artifact androidSourcesJar
+        artifact androidJavadocsJar
+
+        pom.withXml {
+            def dependenciesNode = asNode().appendNode('dependencies')
+            def sdkDependencyNode = dependenciesNode.appendNode('dependency')
+            sdkDependencyNode.appendNode('groupId', 'com.ad4screen.sdk')
+            sdkDependencyNode.appendNode('artifactId', 'A4SSDK')
+            sdkDependencyNode.appendNode('version', "3.5.0") // sdkVersionName
+            sdkDependencyNode.appendNode('scope', 'compile')
+            sdkDependencyNode.appendNode('type', 'aar')
         }
     }
 }
