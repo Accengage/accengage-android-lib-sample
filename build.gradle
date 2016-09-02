@@ -43,6 +43,7 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.0'
     compile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
     //compile 'com.ad4screen.sdk:A4SSDK:3.5.0.1'
+    compile 'com.a4s.sdk:usea4s-annotation:1.0.1'
 }
 
 publishing.repositories {

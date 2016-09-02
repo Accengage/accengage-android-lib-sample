@@ -3,24 +3,83 @@
           package="com.accengage.samples">
 
     <application
-        android:allowBackup="false"
-        android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <activity android:name="com.accengage.samples.MainActivity">
+        <!-- Activities to test a backs stack -->
+        <activity android:name=".backstack.BackstackPreferencesActivity">
         </activity>
-
-        <activity android:name="com.accengage.samples.backstack.BackstackPreferencesActivity">
+        <activity android:name=".backstack.BackstackActivity">
         </activity>
-
-        <activity android:name="com.accengage.samples.backstack.BackstackActivity">
-        </activity>
-
-        <activity android:name="com.accengage.samples.backstack.BackstackActivityWithParent">
+        <activity android:name=".backstack.BackstackActivityWithParent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.accengage.samples.backstack.BackstackActivity"/>
         </activity>
+
+        <!-- Activities to test inapps -->
+        <activity android:name=".inapp.MultiZoneInappActivity">
+        </activity>
+
+        <!-- Accengage SDK service with parameters -->
+        <service
+            android:name="com.ad4screen.sdk.A4SService"
+            android:label="A4S Service"
+            android:process=":A4SService">
+            <meta-data
+                android:name="com.ad4screen.partnerid"
+                android:value="@string/a4s_partner_id"/>
+            <meta-data
+                android:name="com.ad4screen.privatekey"
+                android:value="@string/a4s_private_key"/>
+            <meta-data
+                android:name="com.ad4screen.senderid"
+                android:value="@string/a4s_gcm_sender_id"/>
+            <meta-data
+                android:name="com.ad4screen.logging"
+                android:value="@string/a4s_logging"/>
+            <meta-data
+                android:name="com.ad4screen.no_geoloc"
+                android:value="@string/a4s_no_geoloc"/>
+            <meta-data
+                android:name="com.ad4screen.idsprovider"
+                android:value="@string/a4s_ids_provider" />
+            <meta-data
+                android:name="com.ad4screen.debuggable"
+                android:value="@string/a4s_debuggable" />
+            <meta-data
+                android:name="com.ad4screen.usbstorage"
+                android:value="@string/a4s_usbstorage" />
+            <meta-data
+                android:name="com.ad4screen.facebook_appid"
+                android:value="@string/a4s_facebook_appid" />
+            <meta-data
+                android:name="com.ad4screen.facebook.deferred_applink_redirection"
+                android:value="@string/a4s_facebook_deferred_applink_redirection" />
+            <meta-data
+                android:name="com.ad4screen.advertiser_id"
+                android:value="@string/a4s_advertiser_id" />
+            <meta-data
+                android:name="com.ad4screen.notifications.icon"
+                android:value="@string/a4s_notification_icon" />
+            <meta-data
+                android:name="com.ad4screen.notifications.accent_color"
+                android:value="@string/a4s_notification_accent_color" />
+            <!-- This is needed for testing push locally on Android 2.2 to 2.3. Please see GCMHandler comments -->
+            <meta-data
+                android:name="com.ad4screen.unsecurepush"
+                android:value="@string/a4s_unsecure_push" />
+        </service>
+
+        <!-- Broadcast receiver to handle GCM messages -->
+        <receiver
+            android:name="com.ad4screen.sdk.GCMHandler"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
