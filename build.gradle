@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: 'usea4s'
 
 android {
     compileSdkVersion 24
@@ -33,7 +34,7 @@ task androidSourcesJar(type: Jar) {
 dependencies {
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.a4s.sdk:usea4s-annotation:1.0.1'
+    //compile 'com.a4s.sdk:usea4s-annotation:1.0.1'
 
     compile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
     //compile 'com.ad4screen.sdk:A4SSDK:3.5.0.1'
@@ -88,12 +89,12 @@ publishing.publications {
             appCompatV7Node.appendNode('version', '24.2.0')
             appCompatV7Node.appendNode('scope', 'compile')
             appCompatV7Node.appendNode('type', 'aar')
-            def usesA4SNode = dependenciesNode.appendNode('dependency')
-            usesA4SNode.appendNode('groupId', 'com.a4s.sdk')
-            usesA4SNode.appendNode('artifactId', 'usea4s-annotation')
-            usesA4SNode.appendNode('version', '1.0.1')
-            usesA4SNode.appendNode('scope', 'compile')
-            usesA4SNode.appendNode('type', 'aar')
+//            def usesA4SNode = dependenciesNode.appendNode('dependency')
+//            usesA4SNode.appendNode('groupId', 'com.a4s.sdk')
+//            usesA4SNode.appendNode('artifactId', 'usea4s-annotation')
+//            usesA4SNode.appendNode('version', '1.0.1')
+//            usesA4SNode.appendNode('scope', 'compile')
+//            usesA4SNode.appendNode('type', 'aar')
         }
     }
 }
