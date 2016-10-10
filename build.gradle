@@ -2,6 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'usea4s'
 
+ext.a4sSdkVersionName="3.5.1"
+ext.samplesVersionCode=01
+ext.samplesVersionName="0.1"
+
 android {
     compileSdkVersion 24
     buildToolsVersion "23.0.3"
@@ -9,8 +13,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        versionCode samplesVersionCode
+        versionName samplesVersionName
     }
 }
 
@@ -35,8 +39,8 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.android.support:appcompat-v7:24.2.0'
 
-    compile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
-    //compile 'com.ad4screen.sdk:A4SSDK:3.5.1' //
+    //compile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
+    compile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
 }
 
 publishing.repositories {
@@ -62,7 +66,7 @@ publishing.publications {
     prod(MavenPublication) {
         groupId 'com.accengage.samples'
         artifactId 'A4SSamples'
-        version '0.1'
+        version samplesVersionName
         artifact 'build/outputs/aar/A4SSamples-release.aar'
         artifact androidSourcesJar
         artifact androidJavadocsJar
@@ -72,7 +76,7 @@ publishing.publications {
             def sdkDependencyNode = dependenciesNode.appendNode('dependency')
             sdkDependencyNode.appendNode('groupId', 'com.ad4screen.sdk')
             sdkDependencyNode.appendNode('artifactId', 'A4SSDK')
-            sdkDependencyNode.appendNode('version', "3.5.1")
+            sdkDependencyNode.appendNode('version', a4sSdkVersionName)
             sdkDependencyNode.appendNode('scope', 'compile')
             sdkDependencyNode.appendNode('type', 'aar')
             def supportV4Node = dependenciesNode.appendNode('dependency')
@@ -87,12 +91,6 @@ publishing.publications {
             appCompatV7Node.appendNode('version', '24.2.0')
             appCompatV7Node.appendNode('scope', 'compile')
             appCompatV7Node.appendNode('type', 'aar')
-//            def usesA4SNode = dependenciesNode.appendNode('dependency')
-//            usesA4SNode.appendNode('groupId', 'com.a4s.sdk')
-//            usesA4SNode.appendNode('artifactId', 'usea4s-annotation')
-//            usesA4SNode.appendNode('version', '1.0.1')
-//            usesA4SNode.appendNode('scope', 'compile')
-//            usesA4SNode.appendNode('type', 'aar')
         }
     }
 }
