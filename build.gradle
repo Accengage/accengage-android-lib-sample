@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'usea4s'
 
-ext.a4sSdkVersionName="3.5.1"
+ext.a4sSdkVersionName="3.5.1.0"
 ext.samplesVersionCode=01
 ext.samplesVersionName="0.1"
 
