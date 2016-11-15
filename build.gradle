@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-apply plugin: 'usea4s'
 
 ext.a4sSdkVersionName="3.5.1.0"
 ext.samplesVersionCode=01
@@ -39,8 +38,8 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.android.support:appcompat-v7:24.2.0'
 
-    //compile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
-    compile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
+    compile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
+    //compile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
 }
 
 publishing.repositories {
