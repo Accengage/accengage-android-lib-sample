@@ -70,17 +70,6 @@
                 android:value="@string/a4s_unsecure_push" />
         </service>
 
-        <!-- Broadcast receiver to handle GCM messages -->
-        <!--<receiver-->
-            <!--android:name="com.ad4screen.sdk.GCMHandler"-->
-            <!--android:permission="com.google.android.c2dm.permission.SEND">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.android.c2dm.intent.RECEIVE" />-->
-                <!--<action android:name="com.google.android.c2dm.intent.REGISTRATION" />-->
-                <!--<category android:name="${applicationId}" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-
     </application>
 
 </manifest>
