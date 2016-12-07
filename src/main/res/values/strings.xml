@@ -1,20 +1,20 @@
 <resources>
 
     <!-- Accengage SDK parameters -->
-    <string name="a4s_partner_id">testsadscreenaba63a1a2584b58</string>
-    <string name="a4s_private_key">51f50b8bf4efff2d2e0d41a3e5874e7c9579816e</string>
-    <string name="a4s_gcm_sender_id">gcm:993056754350</string>
-    <string name="a4s_ids_provider"></string>
-    <string name="a4s_no_geoloc">false</string>
-    <string name="a4s_advertiser_id">false</string>
-    <string name="a4s_debuggable">false</string>
-    <string name="a4s_usbstorage">false</string>
-    <string name="a4s_logging">true,no-toast</string>
-    <string name="a4s_facebook_appid"></string>
-    <string name="a4s_facebook_deferred_applink_redirection">true</string>
-    <string name="a4s_unsecure_push">true</string>
-    <string name="a4s_notification_icon"></string>
-    <string name="a4s_notification_accent_color"></string>
+    <!--<string name="a4s_partner_id">testsadscreenaba63a1a2584b58</string>-->
+    <!--<string name="a4s_private_key">51f50b8bf4efff2d2e0d41a3e5874e7c9579816e</string>-->
+    <!--<string name="a4s_gcm_sender_id">gcm:993056754350</string>-->
+    <!--<string name="a4s_ids_provider"></string>-->
+    <!--<string name="a4s_no_geoloc">false</string>-->
+    <!--<string name="a4s_advertiser_id">false</string>-->
+    <!--<string name="a4s_debuggable">false</string>-->
+    <!--<string name="a4s_usbstorage">false</string>-->
+    <!--<string name="a4s_logging">true,no-toast</string>-->
+    <!--<string name="a4s_facebook_appid"></string>-->
+    <!--<string name="a4s_facebook_deferred_applink_redirection">true</string>-->
+    <!--<string name="a4s_unsecure_push">true</string>-->
+    <!--<string name="a4s_notification_icon"></string>-->
+    <!--<string name="a4s_notification_accent_color"></string>-->
 
     <!-- Back stack values -->
     <string name="pref_notif_msg_backstack_enable_key">pref_notif_msg_backstack_enable_key</string>
