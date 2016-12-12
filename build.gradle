@@ -38,8 +38,11 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.android.support:appcompat-v7:24.2.0'
 
-    debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT', changing: true
+    debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT-3.6.0', changing: true
     releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
+
+    //debugCompile project(path: ':A4SSDK-src', configuration: 'prodDebug')
+    //releaseCompile project(path: ':A4SSDK-src', configuration: 'prodRelease')
 }
 
 publishing.repositories {
@@ -57,7 +60,7 @@ publishing.publications {
     dev(MavenPublication) {
         groupId 'com.accengage.samples'
         artifactId 'A4SSamples'
-        version 'SNAPSHOT'
+        version 'SNAPSHOT-'+samplesVersionName
         artifact 'build/outputs/aar/A4SSamples-debug.aar'
         artifact androidSourcesJar
         artifact androidJavadocsJar
