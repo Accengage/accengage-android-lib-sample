@@ -6,12 +6,12 @@ ext.samplesVersionCode=02
 ext.samplesVersionName="0.2"
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode samplesVersionCode
         versionName samplesVersionName
     }
@@ -35,8 +35,8 @@ task androidSourcesJar(type: Jar) {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:support-v4:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.1.0'
 
     debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT-3.6.0', changing: true
     releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
@@ -84,13 +84,13 @@ publishing.publications {
             def supportV4Node = dependenciesNode.appendNode('dependency')
             supportV4Node.appendNode('groupId', 'com.android.support')
             supportV4Node.appendNode('artifactId', 'support-v4')
-            supportV4Node.appendNode('version', '24.2.0')
+            supportV4Node.appendNode('version', '25.1.0')
             supportV4Node.appendNode('scope', 'compile')
             supportV4Node.appendNode('type', 'aar')
             def appCompatV7Node = dependenciesNode.appendNode('dependency')
             appCompatV7Node.appendNode('groupId', 'com.android.support')
             appCompatV7Node.appendNode('artifactId', 'appcompat-v7')
-            appCompatV7Node.appendNode('version', '24.2.0')
+            appCompatV7Node.appendNode('version', '25.1.0')
             appCompatV7Node.appendNode('scope', 'compile')
             appCompatV7Node.appendNode('type', 'aar')
         }
