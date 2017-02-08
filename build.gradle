@@ -4,6 +4,7 @@ apply plugin: 'maven-publish'
 ext.a4sSdkVersionName="3.6.0"
 ext.samplesVersionCode=02
 ext.samplesVersionName="0.2"
+ext.supportVersion="25.1.1"
 
 android {
     compileSdkVersion 25
@@ -35,8 +36,8 @@ task androidSourcesJar(type: Jar) {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:25.1.0'
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:support-v4:'+supportVersion
+    compile 'com.android.support:appcompat-v7:'+supportVersion
 
     debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT-3.6.0', changing: true
     releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
@@ -84,13 +85,13 @@ publishing.publications {
             def supportV4Node = dependenciesNode.appendNode('dependency')
             supportV4Node.appendNode('groupId', 'com.android.support')
             supportV4Node.appendNode('artifactId', 'support-v4')
-            supportV4Node.appendNode('version', '25.1.0')
+            supportV4Node.appendNode('version', supportVersion)
             supportV4Node.appendNode('scope', 'compile')
             supportV4Node.appendNode('type', 'aar')
             def appCompatV7Node = dependenciesNode.appendNode('dependency')
             appCompatV7Node.appendNode('groupId', 'com.android.support')
             appCompatV7Node.appendNode('artifactId', 'appcompat-v7')
-            appCompatV7Node.appendNode('version', '25.1.0')
+            appCompatV7Node.appendNode('version', supportVersion)
             appCompatV7Node.appendNode('scope', 'compile')
             appCompatV7Node.appendNode('type', 'aar')
         }
