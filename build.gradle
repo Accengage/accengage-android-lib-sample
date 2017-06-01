@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
+ext.firebaseVersion="10.2.4"
+ext.firebaseUiAuth="1.2.0"    // use firebase 10.2.4, gps-auth 10.2.0
 ext.a4sSdkVersionName="4.0.0"
 ext.samplesVersionCode=03
 ext.samplesVersionName="0.3"
@@ -36,8 +38,13 @@ task androidSourcesJar(type: Jar) {
 }
 
 dependencies {
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.android.support:support-v4:'+supportVersion
     compile 'com.android.support:appcompat-v7:'+supportVersion
+    compile "com.firebaseui:firebase-ui-auth:$firebaseUiAuth"
+    compile "com.google.firebase:firebase-auth:$firebaseVersion"
+    compile "com.google.firebase:firebase-analytics-impl:$firebaseVersion"
 
     debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: "SNAPSHOT-$a4sSdkVersionName", changing: true
     releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
