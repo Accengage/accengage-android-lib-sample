@@ -1,18 +1,18 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
-ext.a4sSdkVersionName="3.6.0"
-ext.samplesVersionCode=02
-ext.samplesVersionName="0.2"
-ext.supportVersion="25.1.1"
+ext.a4sSdkVersionName="4.0.0"
+ext.samplesVersionCode=03
+ext.samplesVersionName="0.3"
+ext.supportVersion="26.0.0-beta1"
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion "android-O"
+    buildToolsVersion "26.0.0-rc2"
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 25
+        minSdkVersion 14
+        targetSdkVersion 26
         versionCode samplesVersionCode
         versionName samplesVersionName
     }
@@ -39,7 +39,7 @@ dependencies {
     compile 'com.android.support:support-v4:'+supportVersion
     compile 'com.android.support:appcompat-v7:'+supportVersion
 
-    debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT-3.6.0', changing: true
+    debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: "SNAPSHOT-$a4sSdkVersionName", changing: true
     releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
 
     //debugCompile project(path: ':A4SSDK-src', configuration: 'prodDebug')
