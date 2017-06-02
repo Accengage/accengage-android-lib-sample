@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.accengage.samples">
 
-    <uses-sdk tools:overrideLibrary="com.firebase.ui.auth,com.facebook,android.support.customtabs" />
+    <!--<uses-sdk tools:overrideLibrary="com.firebase.ui.auth,com.facebook,android.support.customtabs" />-->
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -16,10 +13,8 @@
         android:supportsRtl="true">
 
         <!-- Activities to test a backs stack -->
-        <activity android:name=".backstack.BackstackPreferencesActivity">
-        </activity>
-        <activity android:name=".backstack.BackstackActivity">
-        </activity>
+        <activity android:name=".backstack.BackstackPreferencesActivity"/>
+        <activity android:name=".backstack.BackstackActivity"/>
         <activity android:name=".backstack.BackstackActivityWithParent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -27,58 +22,7 @@
         </activity>
 
         <!-- Activities to test inapps -->
-        <activity android:name=".inapp.MultiZoneInappActivity">
-        </activity>
-
-        <!-- Accengage SDK service with parameters -->
-        <!--<service-->
-            <!--android:name="com.ad4screen.sdk.A4SService"-->
-            <!--android:label="A4S Service"-->
-            <!--android:process=":A4SService">-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.partnerid"-->
-                <!--android:value="@string/a4s_partner_id"/>-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.privatekey"-->
-                <!--android:value="@string/a4s_private_key"/>-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.senderid"-->
-                <!--android:value="@string/a4s_gcm_sender_id"/>-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.logging"-->
-                <!--android:value="@string/a4s_logging"/>-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.no_geoloc"-->
-                <!--android:value="@string/a4s_no_geoloc"/>-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.idsprovider"-->
-                <!--android:value="@string/a4s_ids_provider" />-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.debuggable"-->
-                <!--android:value="@string/a4s_debuggable" />-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.usbstorage"-->
-                <!--android:value="@string/a4s_usbstorage" />-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.facebook_appid"-->
-                <!--android:value="@string/a4s_facebook_appid" />-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.facebook.deferred_applink_redirection"-->
-                <!--android:value="@string/a4s_facebook_deferred_applink_redirection" />-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.advertiser_id"-->
-                <!--android:value="@string/a4s_advertiser_id" />-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.notifications.icon"-->
-                <!--android:value="@string/a4s_notification_icon" />-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.notifications.accent_color"-->
-                <!--android:value="@string/a4s_notification_accent_color" />-->
-            <!--&lt;!&ndash; This is needed for testing push locally on Android 2.2 to 2.3. Please see GCMHandler comments &ndash;&gt;-->
-            <!--<meta-data-->
-                <!--android:name="com.ad4screen.unsecurepush"-->
-                <!--android:value="@string/a4s_unsecure_push" />-->
-        <!--</service>-->
+        <activity android:name=".inapp.MultiZoneInappActivity"/>
 
     </application>
 
