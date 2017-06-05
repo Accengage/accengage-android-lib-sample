@@ -13,7 +13,6 @@ ext.a4sSdkVersionName="4.0.0"
 ext.samplesVersionCode=03
 ext.samplesVersionName="0.3"
 
-
 android {
     compileSdkVersion "android-O"
     buildToolsVersion "26.0.0-rc2"
@@ -57,8 +56,8 @@ task androidSourcesJar(type: Jar) {
 }
 
 dependencies {
-    compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    compile 'com.jakewharton:butterknife:8.6.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 
     compile 'com.android.support:design:'+supportVersion
     compile 'com.android.support:support-v4:'+supportVersion
@@ -75,6 +74,8 @@ dependencies {
 
     compile "com.firebaseui:firebase-ui-auth:$firebaseUi"
     compile "com.firebaseui:firebase-ui-database:$firebaseUi"
+
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 
     //debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: "SNAPSHOT-$a4sSdkVersionName", changing: true
     //releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName

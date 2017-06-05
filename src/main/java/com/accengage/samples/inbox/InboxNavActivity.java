@@ -1,5 +1,6 @@
 package com.accengage.samples.inbox;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.accengage.samples.R;
+import com.accengage.samples.auth.AuthActivity;
 import com.accengage.samples.base.BaseActivity;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
@@ -37,6 +39,7 @@ import io.reactivex.observers.DisposableObserver;
 
 public class InboxNavActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private FirebaseUser mCurrentUser;
     private DatabaseReference mDatabase;
 
     @Override
@@ -63,6 +66,14 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (mCurrentUser == null) {
+            Intent intent = AuthActivity.createIntent(this, this.getPackageName());
+            startActivity(intent);
+            finish();
+            return;
+        }
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mCallback);
@@ -166,11 +177,10 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         @Override
         public void onNext(@NonNull List<Message> messages) {
             Log.debug("onNext: getting inbox messages");
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser(); // TODO property
-            String uid = currentUser.getUid();
+            String uid = mCurrentUser.getUid();
 
             for (Message message : messages) {
-                final InboxMessage inboxMessage = new InboxMessage(message, uid, currentUser.getDisplayName());
+                final InboxMessage inboxMessage = new InboxMessage(message, uid, mCurrentUser.getDisplayName());
                 Log.debug("onNext message id " + inboxMessage.id);
 
                 mDatabase.child("user-inbxmessages").child(uid).child(inboxMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {

@@ -21,6 +21,8 @@
                 android:value="com.accengage.samples.backstack.BackstackActivity"/>
         </activity>
 
+        <activity android:name=".auth.AuthActivity"/>
+        <activity android:name=".auth.SignedInActivity"/>
         <activity android:name=".inbox.InboxNavActivity"/>
         <activity android:name=".inapp.MultiZoneInappActivity"/>
 
