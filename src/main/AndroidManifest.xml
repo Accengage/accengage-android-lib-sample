@@ -21,7 +21,7 @@
                 android:value="com.accengage.samples.backstack.BackstackActivity"/>
         </activity>
 
-        <!-- Activities to test inapps -->
+        <activity android:name=".inbox.InboxNavActivity"/>
         <activity android:name=".inapp.MultiZoneInappActivity"/>
 
     </application>

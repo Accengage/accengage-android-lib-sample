@@ -1,12 +1,18 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
+ext.rxAndroidVersion = "2.0.1"
+ext.rxJavaVersion = "2.1.0"         // for explicit dependency needed for rxAndroid
+
 ext.firebaseVersion="10.2.6"
-ext.firebaseUiAuth="1.2.0"    // use firebase 10.2.4, gps-auth 10.2.0
+ext.firebaseUi="1.2.0"              // use firebase 10.2.4, gps-auth 10.2.0
+
+ext.supportVersion="26.0.0-beta1"
 ext.a4sSdkVersionName="4.0.0"
+
 ext.samplesVersionCode=03
 ext.samplesVersionName="0.3"
-ext.supportVersion="26.0.0-beta1"
+
 
 android {
     compileSdkVersion "android-O"
@@ -58,9 +64,17 @@ dependencies {
     compile 'com.android.support:support-v4:'+supportVersion
     compile 'com.android.support:appcompat-v7:'+supportVersion
 
+    compile "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+
     compile "com.google.firebase:firebase-auth:$firebaseVersion"
     compile "com.google.firebase:firebase-analytics-impl:$firebaseVersion"
-    compile "com.firebaseui:firebase-ui-auth:$firebaseUiAuth"
+    compile "com.google.firebase:firebase-database:$firebaseVersion"
+
+    compile "com.firebaseui:firebase-ui-auth:$firebaseUi"
+    compile "com.firebaseui:firebase-ui-database:$firebaseUi"
 
     //debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: "SNAPSHOT-$a4sSdkVersionName", changing: true
     //releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
