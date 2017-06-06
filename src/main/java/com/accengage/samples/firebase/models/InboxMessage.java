@@ -15,6 +15,7 @@ public class InboxMessage {
     // Accengage inbox members
     public String id;
     public String title;
+    public String contentType;
     public Date sendDate; // TODO convert to string
     public String body;
     //public String data;
@@ -59,6 +60,7 @@ public class InboxMessage {
             this.downloaded = message.isDownloaded();
             //this.updated = (boolean) getProperty(message, "updated");
             this.icon = (String) getProperty(message, "icon");
+            this.contentType = message.getContentType().name();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -81,6 +83,7 @@ public class InboxMessage {
         HashMap<String, Object> result = new HashMap<>();
         result.put("id", id);
         result.put("title", title);
+        result.put("contentType", contentType);
         result.put("sendDate", sendDate);
         result.put("body", body);
         result.put("sender", sender);
@@ -109,6 +112,7 @@ public class InboxMessage {
         InboxMessage msg = (InboxMessage) obj;
         if (id.equals(msg.id) &&
                 title.equals(msg.title) &&
+                contentType.equals(msg.contentType) &&
                 sendDate.equals(msg.sendDate) &&
                 body.equals(msg.body) &&
                 sender.equals(msg.sender) &&
