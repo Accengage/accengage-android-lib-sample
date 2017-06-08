@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.accengage.samples.R;
 import com.accengage.samples.base.BaseActivity;
 import com.accengage.samples.firebase.models.InboxMessage;
+import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -67,27 +68,40 @@ public class InboxMessageActivity extends BaseActivity {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
+                final InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
                 mSender.setText(msgFromDB.sender);
                 mTitle.setText(msgFromDB.title);
 
-                if (msgFromDB.contentType.equals(Message.MessageContentType.Web.name())) {
-                    Log.d(TAG, "message with a web content");
-                    if (msgFromDB.body != null) {
-                        Log.d(TAG, "message with a web body is not null " + msgFromDB.body);
-                        mWebView.setVisibility(View.VISIBLE);
-                        mWebView.setWebViewClient(new WebViewClient());
-                        WebSettings webSettings = mWebView.getSettings();
-                        webSettings.setJavaScriptEnabled(true);
-                        mWebView.loadUrl(msgFromDB.body);
-                        mBody.setVisibility(View.GONE);
+                Message accMessage = msgFromDB.getAccMessage();
+                accMessage.display(InboxMessageActivity.this, new Acc.Callback<Message>() {
+                    @Override
+                    public void onResult(Message result) {
+                        Log.d(TAG, "onResult display OK");
+
+                        if (msgFromDB.contentType.equals(Message.MessageContentType.Web.name())) {
+                            Log.d(TAG, "message with a web content");
+                            if (msgFromDB.body != null) {
+                                Log.d(TAG, "message with a web body is not null " + msgFromDB.body);
+                                mWebView.setVisibility(View.VISIBLE);
+                                mWebView.setWebViewClient(new WebViewClient());
+                                WebSettings webSettings = mWebView.getSettings();
+                                webSettings.setJavaScriptEnabled(true);
+                                mWebView.loadUrl(msgFromDB.body);
+                                mBody.setVisibility(View.GONE);
+                            }
+                        } else {
+                            Log.d(TAG, "message with an other content: " + msgFromDB.contentType);
+                            mWebView.setVisibility(View.GONE);
+                            mBody.setText(msgFromDB.body);
+                            mBody.setVisibility(View.VISIBLE);
+                        }
                     }
-                } else {
-                    Log.d(TAG, "message with an other content: " + msgFromDB.contentType);
-                    mWebView.setVisibility(View.GONE);
-                    mBody.setText(msgFromDB.body);
-                    mBody.setVisibility(View.VISIBLE);
-                }
+
+                    @Override
+                    public void onError(int error, String errorMessage) {
+                        Log.d(TAG, "onError display KO");
+                    }
+                });
             }
 
             @Override

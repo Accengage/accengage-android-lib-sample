@@ -1,5 +1,8 @@
 package com.accengage.samples.firebase.models;
 
+import android.os.Parcel;
+
+import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -130,5 +133,37 @@ public class InboxMessage {
             return true;
         }
         return false;
+    }
+
+    @Exclude
+    public Message getAccMessage() {
+
+        Parcel parcel = Parcel.obtain();
+        parcel.writeString(id);
+        parcel.writeString(title);
+        parcel.writeLong(sendDate.getTime());
+        parcel.writeString(body);
+        parcel.writeString(sender);
+        parcel.writeString(category);
+        parcel.writeString(text);
+        Log.debug("andrei getAccMessage contentType: " + contentType);
+        parcel.writeString(contentType);
+        parcel.writeString(icon);
+        boolean[] boolArray = {outdated, displayed, read, archived, downloaded};
+        parcel.writeBooleanArray(boolArray);
+        // TODO
+//        parcel.writeArray(buttons);
+//        if (params != null) {
+//            parcel.writeInt(params.size());
+//            for (String s : params.keySet()) {
+//                parcel.writeString(s);
+//                parcel.writeString(params.get(s));
+//            }
+//        } else {
+//            parcel.writeInt(0);
+//        }
+
+        parcel.setDataPosition(0);
+        return Message.CREATOR.createFromParcel(parcel);
     }
 }

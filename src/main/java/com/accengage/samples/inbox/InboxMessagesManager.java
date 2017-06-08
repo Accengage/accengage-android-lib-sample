@@ -2,7 +2,6 @@ package com.accengage.samples.inbox;
 
 import android.content.Context;
 
-import com.ad4screen.sdk.A4S;
 import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Inbox;
 import com.ad4screen.sdk.Log;
@@ -23,6 +22,7 @@ public class InboxMessagesManager {
 
     private static InboxMessagesManager instance;
 
+    private Inbox mInbox;
     private Context mContext;
     private CompositeDisposable mDisposables;
 
@@ -65,12 +65,14 @@ public class InboxMessagesManager {
         @Override
         public ObservableSource<? extends List<Message>> call() throws Exception {
 
-            A4S.get(mContext).getInbox(new Acc.Callback<Inbox>() {
+            Acc.get(mContext).getInbox(new Acc.Callback<Inbox>() {
                 @Override
                 public void onResult(Inbox result) {
+
                     synchronized (mLock) {
-                        if (result != null) {
-                            mCounter = result.countMessages();
+                        mInbox = result;
+                        if (mInbox != null) {
+                            mCounter = mInbox.countMessages();
                             if (mCounter == 0) {
                                 Log.debug("There is no Inbox messages");
                                 notifyIfWaiting();
@@ -79,8 +81,8 @@ public class InboxMessagesManager {
 
                             Log.debug("There is(are) " + mCounter + " Inbox message(s)");
                             mMessages = new ArrayList<>(mCounter);
-                            for (int i = 0; i < result.countMessages(); i++) {
-                                result.getMessage(i, new Acc.MessageCallback() {
+                            for (int i = 0; i < mInbox.countMessages(); i++) {
+                                mInbox.getMessage(i, new Acc.MessageCallback() {
 
                                     @Override
                                     public void onResult(com.ad4screen.sdk.Message msg, final int index) {
