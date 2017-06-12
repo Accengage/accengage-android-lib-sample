@@ -75,7 +75,7 @@ public class InboxMessage {
     }
 
     @Exclude
-    private Object getProperty(Message message, String propertyName) throws NoSuchFieldException, IllegalAccessException {
+    public static Object getProperty(Message message, String propertyName) throws NoSuchFieldException, IllegalAccessException {
         Field f = Message.class.getDeclaredField(propertyName);
         f.setAccessible(true);
         return f.get(message);

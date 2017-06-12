@@ -2,13 +2,16 @@ package com.accengage.samples.inbox;
 
 import android.content.Context;
 
+import com.accengage.samples.firebase.models.InboxMessage;
 import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Inbox;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
@@ -25,10 +28,12 @@ public class InboxMessagesManager {
     private Inbox mInbox;
     private Context mContext;
     private CompositeDisposable mDisposables;
+    private Map<String, Message> mMessageMap;
 
     private InboxMessagesManager(Context context) {
         mContext = context;
         mDisposables = new CompositeDisposable();
+        mMessageMap = new HashMap<>();
     }
 
     public static InboxMessagesManager get(Context context) {
@@ -55,9 +60,16 @@ public class InboxMessagesManager {
         mDisposables.remove(observer);
     }
 
+    public Message getMessage(String id) {
+        return mMessageMap.get(id);
+    }
+
+    public void updateMessages() {
+        Acc.get(mContext).updateMessages(mInbox);
+    }
+
     private class InboxCallable implements Callable<ObservableSource<? extends List<Message>>> {
 
-        private List<Message> mMessages = null;
         private int mCounter = -1;
         private boolean mIsWaiting = false;
         private Object mLock = new Object();
@@ -80,13 +92,20 @@ public class InboxMessagesManager {
                             }
 
                             Log.debug("There is(are) " + mCounter + " Inbox message(s)");
-                            mMessages = new ArrayList<>(mCounter);
                             for (int i = 0; i < mInbox.countMessages(); i++) {
                                 mInbox.getMessage(i, new Acc.MessageCallback() {
 
                                     @Override
                                     public void onResult(com.ad4screen.sdk.Message msg, final int index) {
-                                        mMessages.add(msg);
+                                        try {
+                                            String id = (String) InboxMessage.getProperty(msg, "id");
+                                            Log.debug("onResult message id: " + id + ", title: " + msg.getTitle());
+                                            mMessageMap.put(id, msg);
+                                        } catch (NoSuchFieldException e) {
+                                            e.printStackTrace();
+                                        } catch (IllegalAccessException e) {
+                                            e.printStackTrace();
+                                        }
                                         if (--mCounter == 0) {
                                             notifyIfWaiting();
                                         }
@@ -142,8 +161,8 @@ public class InboxMessagesManager {
                 }
             }
 
-            Log.debug("Notifying about " +  ((null != mMessages) ? mMessages.size() : "0") + " messages");
-            return Observable.fromArray(mMessages);
+            Log.debug("Notifying about " +  mMessageMap.size() + " messages");
+            return Observable.fromArray(new ArrayList<>(mMessageMap.values()));
         }
     };
 }

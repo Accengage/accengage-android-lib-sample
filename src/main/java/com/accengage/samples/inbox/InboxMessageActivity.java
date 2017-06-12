@@ -64,7 +64,7 @@ public class InboxMessageActivity extends BaseActivity {
     public void onStart() {
         super.onStart();
 
-        mMessageListener = new ValueEventListener() {
+        ValueEventListener listener = new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -109,7 +109,8 @@ public class InboxMessageActivity extends BaseActivity {
 
             }
         };
-        mMessageReference.addValueEventListener(mMessageListener);
+        mMessageReference.addValueEventListener(listener);
+        mMessageListener = listener;
     }
 
     @Override
@@ -118,7 +119,6 @@ public class InboxMessageActivity extends BaseActivity {
 
         if (mMessageListener != null) {
             mMessageReference.removeEventListener(mMessageListener);
-            mMessageReference = null;
         }
     }
 }
