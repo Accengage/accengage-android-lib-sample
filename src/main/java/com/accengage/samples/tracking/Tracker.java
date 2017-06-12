@@ -16,4 +16,8 @@ public interface Tracker {
     void trackPurchase(Purchase purchase);
 
     void updateDeviceInfo(String key, String value);
+
+    void trackMessageDisplay(String messageId);
+
+    void trackMessageClick(String messageId);
 }

@@ -14,6 +14,11 @@ public class FirebaseTracker implements Tracker {
     private static final String ACC_EVENT = "Accengage#";
     private static final String ACC_EVENT_ID = "acc_event_id";
 
+    public static class Event {
+        public static final String DISPLAY_INBOX_MSG = "acc_display_inbox_msg";
+        public static final String CLICK_INBOX_MSG = "acc_click_inbox_msg";
+    }
+
     private FirebaseAnalytics mFirebaseAnalytics;
     protected Context mContext;
 
@@ -83,4 +88,19 @@ public class FirebaseTracker implements Tracker {
     public void updateDeviceInfo(String key, String value) {
         mFirebaseAnalytics.setUserProperty(key, value);
     }
+
+    @Override
+    public void trackMessageDisplay(String messageId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("msg_id", messageId);
+        mFirebaseAnalytics.logEvent(Event.DISPLAY_INBOX_MSG, bundle);
+    }
+
+    @Override
+    public void trackMessageClick(String messageId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("msg_id", messageId);
+        mFirebaseAnalytics.logEvent(Event.CLICK_INBOX_MSG, bundle);
+    }
+
 }

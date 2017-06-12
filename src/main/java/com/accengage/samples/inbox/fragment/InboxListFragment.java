@@ -13,6 +13,7 @@ import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.InboxMessageActivity;
 import com.accengage.samples.inbox.InboxMessagesManager;
 import com.accengage.samples.inbox.InboxViewHolder;
+import com.accengage.samples.tracking.Tracker;
 import com.ad4screen.sdk.Message;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,9 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class InboxListFragment extends AccengageFragment {
 
@@ -34,6 +32,7 @@ public abstract class InboxListFragment extends AccengageFragment {
     private FirebaseRecyclerAdapter<InboxMessage, InboxViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
+    private InboxMessagesManager mInboxManager;
 
     @Override
     protected int getLayoutResId() {
@@ -44,6 +43,7 @@ public abstract class InboxListFragment extends AccengageFragment {
     public void onCreatingView(View fragmentView) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mInboxManager = InboxMessagesManager.get(getActivity());
 
         mRecycler = fragmentView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
@@ -81,26 +81,35 @@ public abstract class InboxListFragment extends AccengageFragment {
                     }
                 });
                 viewHolder.bindToMessage(message);
+                onDisplayMessage(message);
+            }
+
+            private void onDisplayMessage(InboxMessage message) {
+                if (!message.displayed) {
+                    message.displayed = true;
+                    mInboxManager.updateMessage(message);
+
+                    Tracker tracker = getTracker();
+                    tracker.trackMessageDisplay(message.id); // Implemented only for Firebase
+
+                    // TODO Tracking should be done in AccengageTracker, lines below must be removed
+                    Message accMessage = mInboxManager.getMessage(message.id);
+                    accMessage.hasBeenDisplayedToUser(getActivity());
+                }
             }
 
             private void onClickMessage(InboxMessage message) {
                 if (!message.read) {
-
-                    // Update Firebase DB
                     message.read = true;
-                    Map<String, Object> msgValues = message.toMap();
-                    Map<String, Object> childUpdates = new HashMap<>();
-                    String path = "/user-inbxmessages/" + mCurrentUser.getUid() + "/" + message.id;
-                    childUpdates.put(path, msgValues);
-                    mDatabase.updateChildren(childUpdates);
-
-                    // Update Accengage inbox
-                    InboxMessagesManager manager = InboxMessagesManager.get(getActivity());
-                    Message accengageMessage = manager.getMessage(message.id);
-                    accengageMessage.setRead(true);
-                    accengageMessage.hasBeenOpenedByUser(getActivity());
-                    manager.updateMessages();
+                    mInboxManager.updateMessage(message);
                 }
+
+                Tracker tracker = getTracker();
+                tracker.trackMessageClick(message.id); // Implemented only for Firebase
+
+                // TODO Tracking should be done in AccengageTracker, lines below must be removed
+                Message accMessage = mInboxManager.getMessage(message.id);
+                accMessage.hasBeenOpenedByUser(getActivity());
             }
         };
         mRecycler.setAdapter(mAdapter);

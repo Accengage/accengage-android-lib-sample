@@ -166,4 +166,21 @@ public class InboxMessage {
         parcel.setDataPosition(0);
         return Message.CREATOR.createFromParcel(parcel);
     }
+
+    public boolean updateAccMessage(Message message) {
+        boolean updated = false;
+        if (message.isRead() != read) {
+            updated = true;
+            message.setRead(read);
+        }
+        if (message.isArchived() != archived) {
+            updated = true;
+            message.setArchived(archived);
+        }
+        if (message.isDisplayed() != displayed) {
+            updated = true;
+            message.setDisplayed(displayed);
+        }
+        return updated;
+    }
 }

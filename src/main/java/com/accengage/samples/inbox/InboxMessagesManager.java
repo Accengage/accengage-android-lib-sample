@@ -7,6 +7,10 @@ import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Inbox;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,10 +34,16 @@ public class InboxMessagesManager {
     private CompositeDisposable mDisposables;
     private Map<String, Message> mMessageMap;
 
+    private DatabaseReference mDatabase;
+    private FirebaseUser mCurrentUser;
+
     private InboxMessagesManager(Context context) {
         mContext = context;
         mDisposables = new CompositeDisposable();
         mMessageMap = new HashMap<>();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public static InboxMessagesManager get(Context context) {
@@ -64,8 +74,19 @@ public class InboxMessagesManager {
         return mMessageMap.get(id);
     }
 
-    public void updateMessages() {
-        Acc.get(mContext).updateMessages(mInbox);
+    public void updateMessage(InboxMessage inboxMessage) {
+        // Update Firebase DB
+        Map<String, Object> msgValues = inboxMessage.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        String path = "/user-inbxmessages/" + mCurrentUser.getUid() + "/" + inboxMessage.id;
+        childUpdates.put(path, msgValues);
+        mDatabase.updateChildren(childUpdates);
+
+        // Update Accengage inbox
+        Message accMessage = getMessage(inboxMessage.id);
+        if (inboxMessage.updateAccMessage(accMessage)) {
+            Acc.get(mContext).updateMessages(mInbox);
+        }
     }
 
     private class InboxCallable implements Callable<ObservableSource<? extends List<Message>>> {
@@ -164,5 +185,6 @@ public class InboxMessagesManager {
             Log.debug("Notifying about " +  mMessageMap.size() + " messages");
             return Observable.fromArray(new ArrayList<>(mMessageMap.values()));
         }
-    };
+    }
+
 }
