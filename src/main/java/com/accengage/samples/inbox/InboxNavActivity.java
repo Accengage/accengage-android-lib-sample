@@ -31,7 +31,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.annotations.NonNull;
@@ -77,6 +76,8 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mCallback);
+
+        displayFragment(InboxMessagesFragment.class);
     }
 
     @Override
@@ -174,42 +175,38 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         ft.commit();
     }
 
-    private DisposableObserver<List<Message>> mCallback = new DisposableObserver<List<Message>>() {
+    private DisposableObserver<Message> mCallback = new DisposableObserver<Message>() {
 
         @Override
-        public void onNext(@NonNull List<Message> messages) {
-            Log.debug("onNext: getting inbox messages");
+        public void onNext(@NonNull Message message) {
             String uid = mCurrentUser.getUid();
+            final InboxMessage inboxMessage = new InboxMessage(message, uid, mCurrentUser.getDisplayName());
+            Log.debug("onNext message id " + inboxMessage.id);
 
-            for (Message message : messages) {
-                final InboxMessage inboxMessage = new InboxMessage(message, uid, mCurrentUser.getDisplayName());
-                Log.debug("onNext message id " + inboxMessage.id);
+            mDatabase.child("user-inbxmessages").child(uid).child(inboxMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
 
-                mDatabase.child("user-inbxmessages").child(uid).child(inboxMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
-                        if (msgFromDB == null) {
-                            Log.debug("Add new inbox message " + inboxMessage.id);
-                            dataSnapshot.getRef().setValue(inboxMessage);
-                        } else {
-                            Log.debug("Inbox message " + msgFromDB.id + " is already existed in the DB");
-                            // check if instances are equal
-                            if (!inboxMessage.equals(msgFromDB)) {
-                                Log.debug("Update Inbox message " + msgFromDB.id);
-                                Map<String, Object> msgValues = inboxMessage.toMap();
-                                dataSnapshot.getRef().updateChildren(msgValues);
-                            }
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
+                    if (msgFromDB == null) {
+                        Log.debug("Add new inbox message " + inboxMessage.id);
+                        dataSnapshot.getRef().setValue(inboxMessage);
+                    } else {
+                        Log.debug("Inbox message " + msgFromDB.id + " is already existed in the DB");
+                        // check if instances are equal
+                        if (!inboxMessage.equals(msgFromDB)) {
+                            Log.debug("Update Inbox message " + msgFromDB.id);
+                            Map<String, Object> msgValues = inboxMessage.toMap();
+                            dataSnapshot.getRef().updateChildren(msgValues);
                         }
                     }
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.debug("onCancelled Inbox message " + databaseError);
-                    }
-                });
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.debug("onCancelled Inbox message " + databaseError);
+                }
+            });
         }
 
         @Override
@@ -220,8 +217,6 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         @Override
         public void onComplete() {
             Log.debug("Getting inbox messages is done");
-            displayFragment(InboxMessagesFragment.class);
         }
     };
-
 }

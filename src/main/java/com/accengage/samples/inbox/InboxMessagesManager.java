@@ -12,14 +12,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
@@ -57,16 +55,15 @@ public class InboxMessagesManager {
         return instance;
     }
 
-    public void subscribeForMessages(DisposableObserver<List<Message>> observer) {
-        Observable<List<Message>> observable = Observable
-                .defer(new InboxCallable())
+    public void subscribeForMessages(DisposableObserver<Message> observer) {
+        Observable.create(new InboxObservable())
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        observable.subscribeWith(observer);
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(observer);
         mDisposables.add(observer);
     }
 
-    public void unsubscribeFromMessages(DisposableObserver<List<Message>> observer) {
+    public void unsubscribeFromMessages(DisposableObserver<Message> observer) {
         mDisposables.remove(observer);
     }
 
@@ -89,15 +86,17 @@ public class InboxMessagesManager {
         }
     }
 
-    private class InboxCallable implements Callable<ObservableSource<? extends List<Message>>> {
+    private class InboxObservable implements ObservableOnSubscribe<Message> {
 
         private int mCounter = -1;
         private boolean mIsWaiting = false;
         private Object mLock = new Object();
+        private ObservableEmitter<Message> mSubscriber;
 
         @Override
-        public ObservableSource<? extends List<Message>> call() throws Exception {
+        public void subscribe(ObservableEmitter<Message> subscriber) throws Exception {
 
+            mSubscriber = subscriber;
             Acc.get(mContext).getInbox(new Acc.Callback<Inbox>() {
                 @Override
                 public void onResult(Inbox result) {
@@ -122,6 +121,7 @@ public class InboxMessagesManager {
                                             String id = (String) InboxMessage.getProperty(msg, "id");
                                             Log.debug("onResult message id: " + id + ", title: " + msg.getTitle());
                                             mMessageMap.put(id, msg);
+                                            mSubscriber.onNext(msg);
                                         } catch (NoSuchFieldException e) {
                                             e.printStackTrace();
                                         } catch (IllegalAccessException e) {
@@ -178,13 +178,13 @@ public class InboxMessagesManager {
                         mLock.wait();
                     } catch(InterruptedException e) {
                         Log.error("An error is occured while getting Inbox messages: " + e);
+                        mSubscriber.onError(new Exception());
                     }
                 }
             }
 
-            Log.debug("Notifying about " +  mMessageMap.size() + " messages");
-            return Observable.fromArray(new ArrayList<>(mMessageMap.values()));
+            Log.debug(mMessageMap.size() + " messages are received");
+            mSubscriber.onComplete();
         }
     }
-
 }
