@@ -22,6 +22,7 @@ import com.accengage.samples.base.BaseActivity;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.ui.ExtraConstants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -223,7 +224,8 @@ public class SignedInActivity extends BaseActivity {
     }
 
     public static Intent createIntent(Context context, IdpResponse idpResponse) {
-        Intent in = IdpResponse.getIntent(idpResponse);
+        Intent in = new Intent();
+        in.putExtra(ExtraConstants.EXTRA_IDP_RESPONSE, idpResponse);
         in.setClass(context, SignedInActivity.class);
         return in;
     }
