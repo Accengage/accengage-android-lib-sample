@@ -77,6 +77,7 @@ public abstract class InboxListFragment extends AccengageFragment {
                         Intent intent = new Intent(getActivity(), InboxMessageActivity.class);
                         intent.putExtra(InboxMessageActivity.EXTRA_MSG_KEY, inboxMessage.id);
                         startActivity(intent);
+
                         onClickMessage(inboxMessage);
                     }
                 });
@@ -94,7 +95,11 @@ public abstract class InboxListFragment extends AccengageFragment {
 
                     // TODO Tracking should be done in AccengageTracker, lines below must be removed
                     Message accMessage = mInboxManager.getMessage(message.id);
-                    accMessage.hasBeenDisplayedToUser(getActivity());
+                    if (accMessage != null) {
+                        accMessage.hasBeenDisplayedToUser(getActivity());
+                    } else {
+                        Log.w(TAG, "There is no accengage message '" + message.id + "' check a connection with Accengage server");
+                    }
                 }
             }
 
@@ -109,7 +114,11 @@ public abstract class InboxListFragment extends AccengageFragment {
 
                 // TODO Tracking should be done in AccengageTracker, lines below must be removed
                 Message accMessage = mInboxManager.getMessage(message.id);
-                accMessage.hasBeenOpenedByUser(getActivity());
+                if (accMessage != null) {
+                    accMessage.hasBeenOpenedByUser(getActivity());
+                } else {
+                    Log.w(TAG, "There is no accengage message '" + message.id + "' check a connection with Accengage server");
+                }
             }
         };
         mRecycler.setAdapter(mAdapter);

@@ -81,8 +81,12 @@ public class InboxMessagesManager {
 
         // Update Accengage inbox
         Message accMessage = getMessage(inboxMessage.id);
-        if (inboxMessage.updateAccMessage(accMessage)) {
-            Acc.get(mContext).updateMessages(mInbox);
+        if (accMessage != null) {
+            if (inboxMessage.updateAccMessage(accMessage)) {
+                Acc.get(mContext).updateMessages(mInbox);
+            }
+        } else {
+            Log.warn("There is no accengage message '" + inboxMessage.id + "' check a connection with Accengage server");
         }
     }
 
