@@ -11,16 +11,17 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.accengage.samples.R;
 import com.accengage.samples.auth.AuthActivity;
+import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.base.BaseActivity;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
+import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,17 +37,18 @@ import java.util.Map;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observers.DisposableObserver;
 
-public class InboxNavActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class InboxNavActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, AccengageFragment.OnFragmentCreateViewListener {
+
+    private ActionBarDrawerToggle mDrawerToggle;
 
     private FirebaseUser mCurrentUser;
     private DatabaseReference mDatabase;
+    private InboxMessage mClickedMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox_nav);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -57,13 +59,13 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        drawer.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -80,14 +82,26 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         displayFragment(InboxMessagesFragment.class);
     }
 
+    private View.OnClickListener mNavigationBackPressListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getSupportFragmentManager().popBackStack();
+        }
+    };
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (!isFinishing()) {
-                finish();
+            if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                getSupportFragmentManager().popBackStack();
+            } else {
+                mDrawerToggle.setDrawerIndicatorEnabled(true);
+                if (!isFinishing()) {
+                    finish();
+                }
             }
         }
     }
@@ -146,7 +160,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         InboxMessagesManager.get(getApplicationContext()).unsubscribeFromMessages(mCallback);
     }
 
-    protected void displayFragment(Class fragmentClass) {
+    public void displayFragment(Class fragmentClass) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         String backStateName = fragmentClass.getName();
         Fragment fragment = fragmentManager.findFragmentByTag(backStateName);
@@ -159,20 +173,55 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                 return;
             }
         }
-//        if (fragment instanceof AccengageFragment) {
-//            String viewName = ((AccengageFragment) fragment).getViewName(this);
-//            if (viewName != null) {
-//                A4S.get(this).setView(viewName);
-//                setTitle(viewName);
-//                checkMenuItemWithName(viewName);
-//                mCurrentView = viewName;
-//            }
-//        }
+
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flContent, fragment, backStateName);
         ft.addToBackStack(backStateName);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void onFragmentCreateViewDone(AccengageFragment fragment) {
+        // Update the navigation bar title
+        if (fragment instanceof AccengageFragment) {
+            String viewName =  fragment.getViewName(this);
+            if (viewName != null) {
+                Acc.get(this).setView(viewName);
+                setTitle(viewName);
+                //checkMenuItemWithName(viewName);
+                //mCurrentView = viewName;
+            }
+        }
+
+        // Update the navigation bar toggle
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            // Remove the hamburger icon
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
+            // Show the back button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            // Set on toggle click listener to pop the previous fragment
+            mDrawerToggle.setToolbarNavigationClickListener(mNavigationBackPressListener);
+        } else {
+            Log.debug("andrei set toggle to default state");
+            // Remove the back button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            // Show the hamburger button
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
+            // Set on toggle click listener to open nav drawer
+            mDrawerToggle.setToolbarNavigationClickListener(mDrawerToggle.getToolbarNavigationClickListener());
+        }
+    }
+
+    public void setClickedMessage(InboxMessage message) {
+        mClickedMessage = message;
+    }
+
+    public InboxMessage getClickedMessage() {
+        return mClickedMessage;
     }
 
     private DisposableObserver<Message> mCallback = new DisposableObserver<Message>() {
@@ -219,4 +268,5 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             Log.debug("Getting inbox messages is done");
         }
     };
+
 }

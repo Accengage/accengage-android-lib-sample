@@ -1,5 +1,6 @@
 package com.accengage.samples.base;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,6 +23,23 @@ public abstract class AccengageFragment extends Fragment {
     protected Tracker mTracker;
 
     private Unbinder mFragmentUnbinder;
+    private OnFragmentCreateViewListener mListener;
+
+    public interface OnFragmentCreateViewListener {
+        void onFragmentCreateViewDone(AccengageFragment fragment);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            try {
+                mListener = (OnFragmentCreateViewListener) activity;
+            }
+            catch (ClassCastException e) {}
+        }
+    }
 
     @Nullable
     @Override
@@ -38,7 +56,9 @@ public abstract class AccengageFragment extends Fragment {
     }
 
     public void onCreatingView(View fragmentView) {
-        // Nothing
+        if (mListener != null) {
+            mListener.onFragmentCreateViewDone(this);
+        }
     }
 
     public abstract String getViewName(Context context);

@@ -1,6 +1,5 @@
 package com.accengage.samples.inbox.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,8 +9,8 @@ import android.view.View;
 import com.accengage.samples.R;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.firebase.models.InboxMessage;
-import com.accengage.samples.inbox.InboxMessageActivity;
 import com.accengage.samples.inbox.InboxMessagesManager;
+import com.accengage.samples.inbox.InboxNavActivity;
 import com.accengage.samples.inbox.InboxViewHolder;
 import com.accengage.samples.tracking.Tracker;
 import com.ad4screen.sdk.Message;
@@ -41,6 +40,7 @@ public abstract class InboxListFragment extends AccengageFragment {
 
     @Override
     public void onCreatingView(View fragmentView) {
+        super.onCreatingView(fragmentView);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         mInboxManager = InboxMessagesManager.get(getActivity());
@@ -73,12 +73,9 @@ public abstract class InboxListFragment extends AccengageFragment {
                         InboxViewHolder holder = (InboxViewHolder) view.getTag();
                         InboxMessage inboxMessage = holder.getMessage();
                         Log.d(TAG, "click message " + inboxMessage.id);
-
-                        Intent intent = new Intent(getActivity(), InboxMessageActivity.class);
-                        intent.putExtra(InboxMessageActivity.EXTRA_MSG_KEY, inboxMessage.id);
-                        startActivity(intent);
-
                         onClickMessage(inboxMessage);
+                        ((InboxNavActivity) getActivity()).setClickedMessage(inboxMessage);
+                        ((InboxNavActivity) getActivity()).displayFragment(InboxMessageDetailFragment.class);
                     }
                 });
                 viewHolder.bindToMessage(message);

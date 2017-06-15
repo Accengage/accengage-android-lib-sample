@@ -3,7 +3,6 @@ package com.accengage.samples.inbox.fragment;
 
 import android.content.Context;
 
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 

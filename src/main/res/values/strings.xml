@@ -46,4 +46,9 @@
     <string name="btn_verify_email">Verify Email</string>
     <string name="btn_check">Check</string>
 
+    <!-- Accengage Inbox -->
+    <string name="action_inbox_delete">Delete</string>
+    <string name="action_inbox_archive">Archive</string>
+    <string name="action_inbox_more">More</string>
+
 </resources>
