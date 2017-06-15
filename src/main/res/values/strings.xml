@@ -47,6 +47,8 @@
     <string name="btn_check">Check</string>
 
     <!-- Accengage Inbox -->
+    <string name="nav_inbox_primary">Primary</string>
+    <string name="nav_inbox_archive">Archive</string>
     <string name="action_inbox_delete">Delete</string>
     <string name="action_inbox_archive">Archive</string>
     <string name="action_inbox_more">More</string>

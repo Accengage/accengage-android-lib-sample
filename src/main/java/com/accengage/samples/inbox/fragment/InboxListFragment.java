@@ -83,7 +83,7 @@ public abstract class InboxListFragment extends AccengageFragment {
             }
 
             private void onDisplayMessage(InboxMessage message) {
-                if (!message.displayed) {
+                if (!message.displayed) { // TODO displayed is always to false afer getting messages from Accengage
                     message.displayed = true;
                     mInboxManager.updateMessage(message);
 

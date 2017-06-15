@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.accengage.samples.R;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.firebase.models.InboxMessage;
+import com.accengage.samples.inbox.InboxMessagesManager;
 import com.accengage.samples.inbox.InboxNavActivity;
 import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Message;
@@ -102,6 +103,9 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int i = item.getItemId();
         if (i == R.id.action_inbox_archive) {
+            mMessage.archived = true;
+            InboxMessagesManager.get(getContext()).updateMessage(mMessage);
+            getActivity().getSupportFragmentManager().popBackStack();
             return true;
         } else if (i == R.id.action_inbox_delete) {
             return true;

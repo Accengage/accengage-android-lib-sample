@@ -43,7 +43,9 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
     private FirebaseUser mCurrentUser;
     private DatabaseReference mDatabase;
+
     private InboxMessage mClickedMessage;
+    private boolean mIsArchived = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,19 +137,13 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        /*if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
+        if (id == R.id.nav_inbox_primary) {
+            mIsArchived = false;
+            replaceFragment(InboxMessagesFragment.class);
+        } else if (id == R.id.nav_inbox_archive) {
+            mIsArchived = true;
+            replaceFragment(InboxMessagesFragment.class);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -158,6 +154,13 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
     protected void onDestroy() {
         super.onDestroy();
         InboxMessagesManager.get(getApplicationContext()).unsubscribeFromMessages(mCallback);
+    }
+
+    public void replaceFragment(Class fragmentClass) {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        }
+        displayFragment(fragmentClass);
     }
 
     public void displayFragment(Class fragmentClass) {
@@ -222,6 +225,10 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
     public InboxMessage getClickedMessage() {
         return mClickedMessage;
+    }
+
+    public boolean isArchived() {
+        return mIsArchived;
     }
 
     private DisposableObserver<Message> mCallback = new DisposableObserver<Message>() {
