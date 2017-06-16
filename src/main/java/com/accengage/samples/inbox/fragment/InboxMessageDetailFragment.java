@@ -2,7 +2,6 @@ package com.accengage.samples.inbox.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,16 +13,25 @@ import android.widget.TextView;
 
 import com.accengage.samples.R;
 import com.accengage.samples.base.AccengageFragment;
+import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.InboxMessagesManager;
 import com.accengage.samples.inbox.InboxNavActivity;
 import com.ad4screen.sdk.Acc;
+import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Map;
 
 
 public class InboxMessageDetailFragment extends AccengageFragment {
 
-    public static final String TAG = "InboxMsgDetailFrag";
+    public static final String TAG = "InboxMsgDetailFrag ";
 
     private InboxMessage mMessage;
 
@@ -56,12 +64,12 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         accMessage.display(getContext(), new Acc.Callback<Message>() {
             @Override
             public void onResult(Message result) {
-                Log.d(TAG, "onResult display OK");
+                Log.debug(TAG + "onResult display OK");
 
                 if (mMessage.contentType.equals(Message.MessageContentType.Web.name())) {
-                    Log.d(TAG, "message with a web content");
+                    Log.debug(TAG + "message with a web content");
                     if (mMessage.body != null) {
-                        Log.d(TAG, "message with a web body is not null " + mMessage.body);
+                        Log.debug(TAG + "message with a web body is not null " + mMessage.body);
                         mWebView.setVisibility(View.VISIBLE);
                         mWebView.setWebViewClient(new WebViewClient());
                         WebSettings webSettings = mWebView.getSettings();
@@ -70,7 +78,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
                         mBody.setVisibility(View.GONE);
                     }
                 } else {
-                    Log.d(TAG, "message with an other content: " + mMessage.contentType);
+                    Log.debug(TAG + "message with an other content: " + mMessage.contentType);
                     mWebView.setVisibility(View.GONE);
                     mBody.setText(mMessage.body);
                     mBody.setVisibility(View.VISIBLE);
@@ -79,7 +87,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
 
             @Override
             public void onError(int error, String errorMessage) {
-                Log.d(TAG, "onError display KO");
+                Log.debug(TAG + "onError display KO");
             }
         });
     }
@@ -103,16 +111,55 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int i = item.getItemId();
         if (i == R.id.action_inbox_archive) {
-            mMessage.archived = true;
-            InboxMessagesManager.get(getContext()).updateMessage(mMessage);
+            archiveMessage();
             getActivity().getSupportFragmentManager().popBackStack();
             return true;
         } else if (i == R.id.action_inbox_delete) {
+            archiveMessage(); // We need to archive the message to not obtain it any more from Accengage server
+            moveMessageToTrash();
+            getActivity().getSupportFragmentManager().popBackStack();
             return true;
         } else if (i == R.id.action_inbox_more) {
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void archiveMessage() {
+        mMessage.archived = true;
+        InboxMessagesManager.get(getContext()).updateMessage(mMessage);
+    }
+
+    private void moveMessageToTrash() {
+        final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        dbRef.child(Constants.USER_INBOX_MESSAGES).child(mMessage.uid).child(Constants.Inbox.Messages.TRASH).
+                child(mMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
+                if (msgFromDB == null) {
+                    Log.debug(TAG + "Add message to trash" + mMessage.id);
+                    dataSnapshot.getRef().setValue(mMessage);
+                } else {
+                    Log.warn(TAG + "Inbox message " + msgFromDB.id + " is already existed in the trash");
+                    // check if instances are equal
+                    if (!mMessage.equals(msgFromDB)) {
+                        Log.debug(TAG + "Update Inbox message " + msgFromDB.id + " in trash");
+                        Map<String, Object> msgValues = mMessage.toMap();
+                        dataSnapshot.getRef().updateChildren(msgValues);
+                    }
+                }
+                // Remove the message from the previous location (label)
+                dbRef.child(Constants.USER_INBOX_MESSAGES).child(mMessage.uid).child(mMessage.label).
+                        child(mMessage.id).removeValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.error(TAG + "onCancelled Inbox message " + databaseError);
+            }
+        });
     }
 }
