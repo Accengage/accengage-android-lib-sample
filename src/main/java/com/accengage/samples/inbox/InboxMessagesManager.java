@@ -7,8 +7,6 @@ import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Inbox;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -33,7 +31,6 @@ public class InboxMessagesManager {
     private Map<String, Message> mMessageMap;
 
     private DatabaseReference mDatabase;
-    private FirebaseUser mCurrentUser;
 
     private InboxMessagesManager(Context context) {
         mContext = context;
@@ -41,7 +38,6 @@ public class InboxMessagesManager {
         mMessageMap = new HashMap<>();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public static InboxMessagesManager get(Context context) {
@@ -75,7 +71,7 @@ public class InboxMessagesManager {
         // Update Firebase DB
         Map<String, Object> msgValues = inboxMessage.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        String path = "/user-inbxmessages/" + mCurrentUser.getUid() + "/" + inboxMessage.id;
+        String path = inboxMessage.getPath();
         childUpdates.put(path, msgValues);
         mDatabase.updateChildren(childUpdates);
 

@@ -2,7 +2,7 @@ package com.accengage.samples.firebase.models;
 
 import android.os.Parcel;
 
-import com.ad4screen.sdk.Log;
+import com.accengage.samples.firebase.Constants;
 import com.ad4screen.sdk.Message;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -35,15 +35,14 @@ public class InboxMessage {
     //public boolean updated;
     public String icon;
 
-    // Firebase user id
     public String uid;
-    public String recipient;
+    public String label;
 
     public InboxMessage() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public InboxMessage(Message message, String uid, String recipient) {
+    public InboxMessage(Message message, String uid) {
 
         try {
             this.id = (String) getProperty(message, "id");
@@ -71,7 +70,7 @@ public class InboxMessage {
         }
 
         this.uid = uid;
-        this.recipient = recipient;
+        this.label = Constants.Inbox.Messages.PRIMARY;
     }
 
     @Exclude
@@ -99,7 +98,7 @@ public class InboxMessage {
         result.put("downloaded", downloaded);
         result.put("icon", icon);
         result.put("uid", uid);
-        result.put("recipient", recipient);
+        result.put("label", label);
         return result;
     }
 
@@ -128,7 +127,7 @@ public class InboxMessage {
                 downloaded == msg.downloaded &&
                 icon.equals(msg.icon) &&
                 uid.equals(msg.uid) &&
-                recipient.equals(msg.recipient)
+                label.equals(msg.label)
                 ) {
             return true;
         }
@@ -146,7 +145,6 @@ public class InboxMessage {
         parcel.writeString(sender);
         parcel.writeString(category);
         parcel.writeString(text);
-        Log.debug("andrei getAccMessage contentType: " + contentType);
         parcel.writeString(contentType);
         parcel.writeString(icon);
         boolean[] boolArray = {outdated, displayed, read, archived, downloaded};
@@ -182,5 +180,9 @@ public class InboxMessage {
             message.setDisplayed(displayed);
         }
         return updated;
+    }
+
+    public String getPath() {
+        return "/" + Constants.USER_INBOX_MESSAGES + "/" + uid + "/" + label + "/" + id;
     }
 }

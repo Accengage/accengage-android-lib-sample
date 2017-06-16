@@ -19,6 +19,7 @@ import com.accengage.samples.R;
 import com.accengage.samples.auth.AuthActivity;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.base.BaseActivity;
+import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
 import com.ad4screen.sdk.Acc;
@@ -39,13 +40,13 @@ import io.reactivex.observers.DisposableObserver;
 
 public class InboxNavActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, AccengageFragment.OnFragmentCreateViewListener {
 
+    private static final String TAG = "InboxNavActivity";
+
     private ActionBarDrawerToggle mDrawerToggle;
-
     private FirebaseUser mCurrentUser;
-    private DatabaseReference mDatabase;
-
     private InboxMessage mClickedMessage;
     private boolean mIsArchived = false;
+    private String mLabel = Constants.Inbox.Messages.PRIMARY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +79,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             return;
         }
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mCallback);
-
         displayFragment(InboxMessagesFragment.class);
     }
 
@@ -139,13 +138,18 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
         if (id == R.id.nav_inbox_primary) {
             mIsArchived = false;
+            mLabel = Constants.Inbox.Messages.PRIMARY;
             replaceFragment(InboxMessagesFragment.class);
         } else if (id == R.id.nav_inbox_archive) {
             mIsArchived = true;
+            mLabel = Constants.Inbox.Messages.PRIMARY;
+            replaceFragment(InboxMessagesFragment.class);
+        } else if (id == R.id.nav_inbox_trash) {
+            mLabel = Constants.Inbox.Messages.TRASH;
             replaceFragment(InboxMessagesFragment.class);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -231,15 +235,21 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         return mIsArchived;
     }
 
+    public String getLabel() {
+        return mLabel;
+    }
+
     private DisposableObserver<Message> mCallback = new DisposableObserver<Message>() {
 
         @Override
         public void onNext(@NonNull Message message) {
             String uid = mCurrentUser.getUid();
-            final InboxMessage inboxMessage = new InboxMessage(message, uid, mCurrentUser.getDisplayName());
+            final InboxMessage inboxMessage = new InboxMessage(message, uid);
             Log.debug("onNext message id " + inboxMessage.id);
 
-            mDatabase.child("user-inbxmessages").child(uid).child(inboxMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+            dbRef.child(Constants.USER_INBOX_MESSAGES).child(uid).child(Constants.Inbox.Messages.PRIMARY).
+                    child(inboxMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

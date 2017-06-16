@@ -4,8 +4,8 @@ package com.accengage.samples.inbox.fragment;
 import android.content.Context;
 
 import com.accengage.samples.R;
+import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.inbox.InboxNavActivity;
-import com.ad4screen.sdk.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -14,20 +14,33 @@ public class InboxMessagesFragment extends InboxListFragment {
 
     @Override
     public String getViewName(Context context) {
-        String name = ((InboxNavActivity) getActivity()).isArchived() ? getString(R.string.nav_inbox_archive) :
-                getString(R.string.nav_inbox_primary);
+        String name;
+        String label = ((InboxNavActivity) getActivity()).getLabel();
+        switch (label) {
+            case Constants.Inbox.Messages.PRIMARY:
+                name = ((InboxNavActivity) getActivity()).isArchived() ? getString(R.string.nav_inbox_archive) :
+                        getString(R.string.nav_inbox_primary);
+                break;
+            case Constants.Inbox.Messages.TRASH:
+                name = getString(R.string.nav_inbox_trash);
+                break;
+            default:
+                name = getString(R.string.nav_inbox_primary);
+                break;
+        }
         return name;
     }
 
     @Override
     public Query getQuery(DatabaseReference databaseReference) {
-        // Last 100 posts, these are automatically the 100 most recent
-        // due to sorting by push() keys
-
         boolean isArchived = ((InboxNavActivity) getActivity()).isArchived();
-        Log.debug("andrei getQuery " + isArchived);
-        Query recentPostsQuery = databaseReference.child("user-inbxmessages").child(mCurrentUser.getUid())
-                .limitToFirst(100).orderByChild("archived").equalTo(isArchived);
+        String label = ((InboxNavActivity) getActivity()).getLabel();
+        Query recentPostsQuery = databaseReference.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(label)
+                .limitToFirst(100);
+
+        if (label.equals(Constants.Inbox.Messages.PRIMARY)) {
+            recentPostsQuery = recentPostsQuery.orderByChild("archived").equalTo(isArchived);
+        }
 
         return recentPostsQuery;
     }
