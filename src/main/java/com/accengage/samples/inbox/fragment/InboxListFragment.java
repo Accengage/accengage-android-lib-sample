@@ -78,7 +78,7 @@ public abstract class InboxListFragment extends AccengageFragment {
                         ((InboxNavActivity) getActivity()).displayFragment(InboxMessageDetailFragment.class);
                     }
                 });
-                viewHolder.bindToMessage(message);
+                viewHolder.bindToMessage(InboxListFragment.this.getContext(), message);
                 onDisplayMessage(message);
             }
 

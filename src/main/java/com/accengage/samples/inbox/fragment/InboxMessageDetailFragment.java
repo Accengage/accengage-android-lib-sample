@@ -2,6 +2,7 @@ package com.accengage.samples.inbox.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.accengage.samples.R;
@@ -17,6 +19,7 @@ import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.InboxMessagesManager;
 import com.accengage.samples.inbox.InboxNavActivity;
+import com.accengage.samples.inbox.InboxViewHolder;
 import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
@@ -39,6 +42,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     private TextView mTitle;
     private TextView mBody;
     private WebView mWebView;
+    private ImageView mIconView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,9 +60,16 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         mTitle = fragmentView.findViewById(R.id.inbox_msg_title);
         mBody = fragmentView.findViewById(R.id.inbox_msg_body);
         mWebView = fragmentView.findViewById(R.id.inbox_msg_webview);
+        mIconView = fragmentView.findViewById(R.id.inbox_msg_sender_photo);
 
         mSender.setText(mMessage.sender);
         mTitle.setText(mMessage.title);
+
+        if (TextUtils.isEmpty(mMessage.icon)) {
+            mIconView.setImageResource(0);
+        } else {
+            InboxViewHolder.loadAndSetIcon(InboxMessageDetailFragment.this.getContext(), mIconView, mMessage.icon);
+        }
 
         Message accMessage = mMessage.getAccMessage();
         accMessage.display(getContext(), new Acc.Callback<Message>() {
