@@ -9,6 +9,7 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -189,6 +190,10 @@ public class InboxMessage {
 
     public String getPath() {
         return "/" + Constants.USER_INBOX_MESSAGES + "/" + uid + "/" + label + "/" + id;
+    }
+
+    public String getFormatedDate() {
+        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(convertStringToDate(sendDate));
     }
 
     private static String convertDateToString(Date date) {
