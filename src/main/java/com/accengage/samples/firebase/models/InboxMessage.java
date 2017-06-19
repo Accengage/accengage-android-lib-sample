@@ -3,11 +3,14 @@ package com.accengage.samples.firebase.models;
 import android.os.Parcel;
 
 import com.accengage.samples.firebase.Constants;
+import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,11 +18,13 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class InboxMessage {
 
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     // Accengage inbox members
     public String id;
     public String title;
     public String contentType;
-    public Date sendDate; // TODO convert to string
+    public String sendDate;
     public String body;
     //public String data;
     public String sender;
@@ -47,7 +52,7 @@ public class InboxMessage {
         try {
             this.id = (String) getProperty(message, "id");
             this.title = message.getTitle();
-            this.sendDate = message.getSendDate();
+            this.sendDate = convertDateToString(message.getSendDate());
             this.body = message.getBody();
             //this.data = (String) getProperty(message, "data");
             this.sender = message.getSender();
@@ -140,7 +145,7 @@ public class InboxMessage {
         Parcel parcel = Parcel.obtain();
         parcel.writeString(id);
         parcel.writeString(title);
-        parcel.writeLong(sendDate.getTime());
+        parcel.writeLong(convertStringToDate(sendDate).getTime());
         parcel.writeString(body);
         parcel.writeString(sender);
         parcel.writeString(category);
@@ -184,5 +189,20 @@ public class InboxMessage {
 
     public String getPath() {
         return "/" + Constants.USER_INBOX_MESSAGES + "/" + uid + "/" + label + "/" + id;
+    }
+
+    private static String convertDateToString(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
+        return dateFormat.format(date);
+    }
+
+    private static Date convertStringToDate(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
+        try {
+            return dateFormat.parse(date);
+        } catch (ParseException e) {
+            Log.error("ContentHelper|convertStringToDate exception: " + e.toString());
+            return new Date(0);
+        }
     }
 }
