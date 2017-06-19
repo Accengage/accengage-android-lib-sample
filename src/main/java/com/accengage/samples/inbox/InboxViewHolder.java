@@ -1,10 +1,12 @@
 package com.accengage.samples.inbox;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ public class InboxViewHolder extends RecyclerView.ViewHolder {
     private TextView mTitle;
     private TextView mShortText;
     private ImageView mIconView;
+    private TextView mSentTime;
 
     private InboxMessage mMessage;
 
@@ -31,17 +34,25 @@ public class InboxViewHolder extends RecyclerView.ViewHolder {
         mTitle = itemView.findViewById(R.id.inbox_msg_title);
         mShortText = itemView.findViewById(R.id.inbox_msg_short_text);
         mIconView = itemView.findViewById(R.id.inbox_msg_sender_photo);
+        mSentTime = itemView.findViewById(R.id.inbox_msg_sent_time);
     }
 
     public void bindToMessage(Context context, InboxMessage inboxMessage) {
         mMessage = inboxMessage;
-        mSender.setText(inboxMessage.sender);
 
-        mTitle.setText(inboxMessage.title);
-        if (inboxMessage.read) {
-            mTitle.setTypeface(Typeface.DEFAULT);
+        if (!inboxMessage.read) {
+            mSender.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+            mTitle.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+            mTitle.setTextColor(Color.BLACK);
+            mSentTime.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+            mSentTime.setTextColor(context.getResources().getColor(R.color.accent));
         }
 
+        if (!TextUtils.isEmpty(mMessage.icon)) {
+            loadAndSetIcon(context, mIconView, mMessage.icon);
+        }
+        mSender.setText(inboxMessage.sender);
+        mTitle.setText(inboxMessage.title);
         if (!inboxMessage.text.isEmpty()) {
             mShortText.setText(inboxMessage.text);
         } else {
@@ -50,9 +61,10 @@ public class InboxViewHolder extends RecyclerView.ViewHolder {
                  mShortText.setText(inboxMessage.body);
              }
         }
-
-        if (!TextUtils.isEmpty(mMessage.icon)) {
-            loadAndSetIcon(context, mIconView, mMessage.icon);
+        if (DateUtils.isToday(mMessage.getSentTime())) {
+            mSentTime.setText(mMessage.getFormatedTime());
+        } else {
+            mSentTime.setText(mMessage.getFormatedDate());
         }
     }
 

@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @IgnoreExtraProperties
@@ -192,7 +193,20 @@ public class InboxMessage {
         return "/" + Constants.USER_INBOX_MESSAGES + "/" + uid + "/" + label + "/" + id;
     }
 
+    public long getSentTime() {
+        return convertStringToDate(sendDate).getTime();
+    }
+
     public String getFormatedDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM", Locale.getDefault());
+        return dateFormat.format(convertStringToDate(sendDate));
+    }
+
+    public String getFormatedTime() {
+        return DateFormat.getTimeInstance(DateFormat.SHORT).format(convertStringToDate(sendDate));
+    }
+
+    public String getFormatedDateTime() {
         return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(convertStringToDate(sendDate));
     }
 

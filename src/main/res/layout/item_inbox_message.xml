@@ -8,43 +8,101 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
-
-        <include
-            android:id="@+id/inbox_msg_sender_layout"
-            layout="@layout/include_inbox_msg_sender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true" />
+        android:padding="5dp">
 
         <LinearLayout
-            android:id="@+id/inbox_msg_star_layout"
-            android:layout_width="wrap_content"
+            android:id="@+id/inbox_msg_sender_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/inbox_msg_sender_layout"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/inbox_msg_sender_layout"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/inbox_msg_separator">
 
             <ImageView
-                android:id="@+id/inbox_msg_star"
-                android:layout_width="wrap_content"
+                android:id="@+id/inbox_msg_sender_photo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_action_account_circle_40" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="5dp"
-                android:background="?attr/selectableItemBackground"
-                android:src="@drawable/ic_toggle_star_outline_24" />
+                android:orientation="vertical">
+
+                <!-- The first line -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp">
+
+                    <TextView
+                        android:id="@+id/inbox_msg_sender"
+                        style="@style/Base.TextAppearance.AppCompat.Subhead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        tools:text="Emmanuel Macron" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/inbox_msg_sent_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center_vertical"
+                        android:maxLines="1"
+                        tools:text="Jun 17" />
+
+                </LinearLayout>
+
+                <!-- The second line -->
+                <TextView
+                    android:id="@+id/inbox_msg_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="35dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="My First Post"
+                    android:layout_marginLeft="10dp"/>
+
+                <!-- The third line -->
+                <RelativeLayout
+                    android:id="@+id/inbox_msg_3rd_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp">
+
+                    <TextView
+                        android:id="@+id/inbox_msg_short_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="35dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        tools:text="Blah-blah-blah"/>
+
+                    <ImageView
+                        android:id="@+id/inbox_msg_star"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_alignParentRight="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:src="@drawable/ic_toggle_star_outline_24" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
-
-        <include layout="@layout/include_inbox_msg_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/inbox_msg_sender_layout"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="10dp" />
 
     </RelativeLayout>
 

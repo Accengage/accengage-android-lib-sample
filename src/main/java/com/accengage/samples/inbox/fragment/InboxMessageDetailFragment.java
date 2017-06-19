@@ -65,7 +65,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         mSentTime = fragmentView.findViewById(R.id.inbox_msg_sent_time);
 
         mSender.setText(mMessage.sender);
-        mSentTime.setText(mMessage.getFormatedDate());
+        mSentTime.setText(mMessage.getFormatedDateTime());
         mTitle.setText(mMessage.title);
 
         if (!TextUtils.isEmpty(mMessage.icon)) {
