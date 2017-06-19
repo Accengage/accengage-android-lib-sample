@@ -65,9 +65,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         mSender.setText(mMessage.sender);
         mTitle.setText(mMessage.title);
 
-        if (TextUtils.isEmpty(mMessage.icon)) {
-            mIconView.setImageResource(0);
-        } else {
+        if (!TextUtils.isEmpty(mMessage.icon)) {
             InboxViewHolder.loadAndSetIcon(InboxMessageDetailFragment.this.getContext(), mIconView, mMessage.icon);
         }
 

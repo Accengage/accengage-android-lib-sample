@@ -51,9 +51,7 @@ public class InboxViewHolder extends RecyclerView.ViewHolder {
              }
         }
 
-        if (TextUtils.isEmpty(mMessage.icon)) {
-            mIconView.setImageResource(0);
-        } else {
+        if (!TextUtils.isEmpty(mMessage.icon)) {
             loadAndSetIcon(context, mIconView, mMessage.icon);
         }
     }
