@@ -172,6 +172,7 @@ public class InboxMessage {
         return Message.CREATOR.createFromParcel(parcel);
     }
 
+    @Exclude
     public boolean updateAccMessage(Message message) {
         boolean updated = false;
         if (message.isRead() != read) {
@@ -189,32 +190,39 @@ public class InboxMessage {
         return updated;
     }
 
+    @Exclude
     public String getPath() {
         return "/" + Constants.USER_INBOX_MESSAGES + "/" + uid + "/" + label + "/" + id;
     }
 
+    @Exclude
     public long getSentTime() {
         return convertStringToDate(sendDate).getTime();
     }
 
+    @Exclude
     public String getFormatedDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM", Locale.getDefault());
         return dateFormat.format(convertStringToDate(sendDate));
     }
 
+    @Exclude
     public String getFormatedTime() {
         return DateFormat.getTimeInstance(DateFormat.SHORT).format(convertStringToDate(sendDate));
     }
 
+    @Exclude
     public String getFormatedDateTime() {
         return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(convertStringToDate(sendDate));
     }
 
+    @Exclude
     private static String convertDateToString(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
         return dateFormat.format(date);
     }
 
+    @Exclude
     private static Date convertStringToDate(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
         try {
