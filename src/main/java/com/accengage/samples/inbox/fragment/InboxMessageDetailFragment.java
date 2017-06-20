@@ -117,6 +117,21 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.inbox_msg_actions, menu);
+
+        // Hide actions according to the message (label and archive status)
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            int id = item.getItemId();
+            if (id == R.id.action_inbox_archive) {
+                if (mMessage.archived) {
+                    item.setVisible(false);
+                }
+            } else if (id == R.id.action_inbox_delete) {
+                if (mMessage.label.equals(Constants.Inbox.Messages.TRASH)) {
+                    item.setVisible(false);
+                }
+            }
+        }
     }
 
     @Override
@@ -151,6 +166,8 @@ public class InboxMessageDetailFragment extends AccengageFragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
+                String previousLabel = mMessage.label;
+                mMessage.label = Constants.Inbox.Messages.TRASH;
                 if (msgFromDB == null) {
                     Log.debug(TAG + "Add message to trash" + mMessage.id);
                     dataSnapshot.getRef().setValue(mMessage);
@@ -164,7 +181,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
                     }
                 }
                 // Remove the message from the previous location (label)
-                dbRef.child(Constants.USER_INBOX_MESSAGES).child(mMessage.uid).child(mMessage.label).
+                dbRef.child(Constants.USER_INBOX_MESSAGES).child(mMessage.uid).child(previousLabel).
                         child(mMessage.id).removeValue();
             }
 
