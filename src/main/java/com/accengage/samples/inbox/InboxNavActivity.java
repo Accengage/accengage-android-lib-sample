@@ -1,6 +1,7 @@
 package com.accengage.samples.inbox;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -11,9 +12,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
+import android.widget.TextView;
 
 import com.accengage.samples.R;
 import com.accengage.samples.auth.AuthActivity;
@@ -40,13 +45,18 @@ import io.reactivex.observers.DisposableObserver;
 
 public class InboxNavActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, AccengageFragment.OnFragmentCreateViewListener {
 
-    private static final String TAG = "InboxNavActivity";
+    private static final String TAG = "InboxNavActivity ";
+    private static final int MENU_CATEGORY_GROUP_ID = 123;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private FirebaseUser mCurrentUser;
     private InboxMessage mClickedMessage;
     private boolean mIsArchived = false;
     private String mLabel = Constants.Inbox.Messages.PRIMARY;
+
+    private MessagesHandler mMessageHandler = new MessagesHandler();
+    private Menu mNavigationMenu;
+    private SubMenu mCategoryMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +81,8 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        mNavigationMenu = navigationView.getMenu();
+
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (mCurrentUser == null) {
             Intent intent = AuthActivity.createIntent(this, this.getPackageName());
@@ -79,7 +91,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             return;
         }
 
-        InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mCallback);
+        InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mMessageHandler);
         displayFragment(InboxMessagesFragment.class);
     }
 
@@ -157,7 +169,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        InboxMessagesManager.get(getApplicationContext()).unsubscribeFromMessages(mCallback);
+        InboxMessagesManager.get(getApplicationContext()).unsubscribeFromMessages(mMessageHandler);
     }
 
     public void replaceFragment(Class fragmentClass) {
@@ -239,51 +251,148 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         return mLabel;
     }
 
-    private DisposableObserver<Message> mCallback = new DisposableObserver<Message>() {
+
+    private class MessagesHandler extends DisposableObserver<Message> {
+
+        private boolean mIsAllMessagesReceived = false;
+        private int mReceivedMessageCount = 0;
+        private int mHandledMessageCount = 0;
+
+        private abstract class CategoryEventListener {
+            abstract void onCategoryDone();
+        }
 
         @Override
         public void onNext(@NonNull Message message) {
             String uid = mCurrentUser.getUid();
             final InboxMessage inboxMessage = new InboxMessage(message, uid);
-            Log.debug("onNext message id " + inboxMessage.id);
+            Log.debug(TAG + "onNext message id " + inboxMessage.id);
+            mReceivedMessageCount++;
+            writeMessage(inboxMessage);
+        }
 
+        @Override
+        public void onError(@NonNull Throwable e) {
+            Log.debug(TAG + "An error is occurred while getting inbox messages");
+        }
+
+        @Override
+        public void onComplete() {
+            Log.debug(TAG + "Getting inbox messages is done, message count: " + mReceivedMessageCount);
+            mIsAllMessagesReceived = true;
+            readCategoriesIfMessagesHandled();
+        }
+
+        private void writeMessage(final InboxMessage message) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-            dbRef.child(Constants.USER_INBOX_MESSAGES).child(uid).child(Constants.Inbox.Messages.PRIMARY).
-                    child(inboxMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
+            dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.PRIMARY).
+                    child(message.id).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
                     if (msgFromDB == null) {
-                        Log.debug("Add new inbox message " + inboxMessage.id);
-                        dataSnapshot.getRef().setValue(inboxMessage);
+                        Log.debug(TAG + "Add new inbox message " + message.id);
+                        dataSnapshot.getRef().setValue(message);
+                        writeCategory(message, new CategoryEventListener() {
+                            @Override
+                            public void onCategoryDone() {
+                                mHandledMessageCount++;
+                                readCategoriesIfMessagesHandled();
+                            }
+                        });
                     } else {
-                        Log.debug("Inbox message " + msgFromDB.id + " is already existed in the DB");
+                        Log.debug(TAG + "Inbox message " + msgFromDB.id + " is already existed in the DB");
                         // check if instances are equal
-                        if (!inboxMessage.equals(msgFromDB)) {
+                        if (!message.equals(msgFromDB)) {
                             Log.debug("Update Inbox message " + msgFromDB.id);
-                            Map<String, Object> msgValues = inboxMessage.toMap();
+                            Map<String, Object> msgValues = message.toMap();
                             dataSnapshot.getRef().updateChildren(msgValues);
                         }
+                        mHandledMessageCount++;
+                        readCategoriesIfMessagesHandled();
                     }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.debug("onCancelled Inbox message " + databaseError);
+                    Log.debug(TAG + "onCancelled Inbox message " + databaseError);
                 }
             });
         }
 
-        @Override
-        public void onError(@NonNull Throwable e) {
-            Log.debug("An error is occurred while getting inbox messages");
+        private void writeCategory(final InboxMessage inboxMessage, final CategoryEventListener listener) {
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+
+            if (!TextUtils.isEmpty(inboxMessage.category)) {
+
+                dbRef.child(Constants.USER_INBOX_CATEGORIES).child(inboxMessage.uid).child(inboxMessage.category)
+                        .child(inboxMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String id = dataSnapshot.getValue(String.class);
+                        if (id == null) {
+                            Log.debug(TAG + "Add a message " + inboxMessage.id + " to category " + inboxMessage.category);
+                            dataSnapshot.getRef().setValue(inboxMessage.id);
+                        } else {
+                            Log.debug(TAG + "A message " + inboxMessage.id + " is already existed in category " + inboxMessage.category);
+                        }
+                        listener.onCategoryDone();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.debug(TAG + "onCancelled Inbox category " + databaseError);
+                        listener.onCategoryDone();
+                    }
+                });
+            } else {
+                listener.onCategoryDone();
+            }
         }
 
-        @Override
-        public void onComplete() {
-            Log.debug("Getting inbox messages is done");
-        }
-    };
+        private void readCategoriesIfMessagesHandled() {
+            if (!mIsAllMessagesReceived)
+                return;
 
+            if (mReceivedMessageCount == mHandledMessageCount) {
+                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+                dbRef.child(Constants.USER_INBOX_CATEGORIES).child(mCurrentUser.getUid()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        createCategoryMenu();
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                            String categoryName = child.getKey();
+                            long messagesCount = child.getChildrenCount();
+                            Log.debug(TAG + "Category " + categoryName + " has " + messagesCount + " message(s)");
+                            populateCategoryMenuItem(categoryName, messagesCount);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        }
+    }
+
+    private void createCategoryMenu() {
+        if (mCategoryMenu != null) {
+            mNavigationMenu.removeGroup(MENU_CATEGORY_GROUP_ID);
+        }
+        mCategoryMenu = mNavigationMenu.addSubMenu(MENU_CATEGORY_GROUP_ID, Menu.NONE, Menu.NONE, R.string.nav_inbox_categories);
+    }
+    private void populateCategoryMenuItem(String category, long count) {
+        MenuItem item = mCategoryMenu.add(category);
+        item.setIcon(R.drawable.ic_action_label);
+        TextView tv = new TextView(this);
+        tv.setText(String.valueOf(count));
+        tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        tv.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        item.setActionView(tv);
+        item.setCheckable(true);
+    }
 }
