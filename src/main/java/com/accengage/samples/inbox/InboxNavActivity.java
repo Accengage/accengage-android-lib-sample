@@ -53,6 +53,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
     private InboxMessage mClickedMessage;
     private boolean mIsArchived = false;
     private String mLabel = Constants.Inbox.Messages.PRIMARY;
+    private String mCategory;
 
     private MessagesHandler mMessageHandler = new MessagesHandler();
     private Menu mNavigationMenu;
@@ -147,6 +148,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        mCategory = null;
 
         if (id == R.id.nav_inbox_primary) {
             mIsArchived = false;
@@ -158,6 +160,9 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             replaceFragment(InboxMessagesFragment.class);
         } else if (id == R.id.nav_inbox_trash) {
             mLabel = Constants.Inbox.Messages.TRASH;
+            replaceFragment(InboxMessagesFragment.class);
+        } else {
+            mCategory = item.getTitle().toString();
             replaceFragment(InboxMessagesFragment.class);
         }
 
@@ -251,6 +256,9 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         return mLabel;
     }
 
+    public String getCategory() {
+        return mCategory;
+    }
 
     private class MessagesHandler extends DisposableObserver<Message> {
 
