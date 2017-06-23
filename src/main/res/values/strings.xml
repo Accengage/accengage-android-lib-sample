@@ -49,6 +49,7 @@
     <!-- Accengage Inbox -->
     <string name="nav_inbox_primary">Primary</string>
     <string name="nav_inbox_archive">Archive</string>
+    <string name="nav_inbox_expired">Expired</string>
     <string name="nav_inbox_trash">Trash</string>
 
     <string name="nav_inbox_categories">Categories</string>

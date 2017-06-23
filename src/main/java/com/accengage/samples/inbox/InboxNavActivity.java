@@ -38,7 +38,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observers.DisposableObserver;
@@ -58,6 +60,8 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
     private MessagesHandler mMessageHandler = new MessagesHandler();
     private Menu mNavigationMenu;
     private SubMenu mCategoryMenu;
+
+    private Set<String> mReceivedMessageIds = new HashSet();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,18 +157,17 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         if (id == R.id.nav_inbox_primary) {
             mIsArchived = false;
             mLabel = Constants.Inbox.Messages.PRIMARY;
-            replaceFragment(InboxMessagesFragment.class);
         } else if (id == R.id.nav_inbox_archive) {
             mIsArchived = true;
             mLabel = Constants.Inbox.Messages.PRIMARY;
-            replaceFragment(InboxMessagesFragment.class);
+        } else if (id == R.id.nav_inbox_expired) {
+            mLabel = Constants.Inbox.Messages.EXPIRED;
         } else if (id == R.id.nav_inbox_trash) {
             mLabel = Constants.Inbox.Messages.TRASH;
-            replaceFragment(InboxMessagesFragment.class);
         } else {
             mCategory = item.getTitle().toString();
-            replaceFragment(InboxMessagesFragment.class);
         }
+        replaceFragment(InboxMessagesFragment.class);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -276,6 +279,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             final InboxMessage inboxMessage = new InboxMessage(message, uid);
             Log.debug(TAG + "onNext message id " + inboxMessage.id);
             mReceivedMessageCount++;
+            mReceivedMessageIds.add(inboxMessage.id);
             writeMessage(inboxMessage);
         }
 
@@ -288,7 +292,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         public void onComplete() {
             Log.debug(TAG + "Getting inbox messages is done, message count: " + mReceivedMessageCount);
             mIsAllMessagesReceived = true;
-            readCategoriesIfMessagesHandled();
+            checkExpiredMessagesAndReadCategories();
         }
 
         private void writeMessage(final InboxMessage message) {
@@ -306,7 +310,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                             @Override
                             public void onCategoryDone() {
                                 mHandledMessageCount++;
-                                readCategoriesIfMessagesHandled();
+                                readCategories();
                             }
                         });
                     } else {
@@ -318,7 +322,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                             dataSnapshot.getRef().updateChildren(msgValues);
                         }
                         mHandledMessageCount++;
-                        readCategoriesIfMessagesHandled();
+                        checkExpiredMessagesAndReadCategories();
                     }
                 }
 
@@ -359,31 +363,55 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             }
         }
 
-        private void readCategoriesIfMessagesHandled() {
+        private void checkExpiredMessagesAndReadCategories() {
             if (!mIsAllMessagesReceived)
                 return;
 
             if (mReceivedMessageCount == mHandledMessageCount) {
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-                dbRef.child(Constants.USER_INBOX_CATEGORIES).child(mCurrentUser.getUid()).addValueEventListener(new ValueEventListener() {
+                dbRef.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(Constants.Inbox.Messages.PRIMARY)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        createCategoryMenu();
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            String categoryName = child.getKey();
-                            long messagesCount = child.getChildrenCount();
-                            Log.debug(TAG + "Category " + categoryName + " has " + messagesCount + " message(s)");
-                            populateCategoryMenuItem(categoryName, messagesCount);
+                            InboxMessage msgFromDB = child.getValue(InboxMessage.class);
+                            if (!mReceivedMessageIds.contains(msgFromDB.id)) {
+                                Log.debug(TAG + "Message " + msgFromDB.id + " is expired, move it to Expired");
+                                msgFromDB.outdated = true;
+                                InboxUtils.moveMessageTo(Constants.Inbox.Messages.EXPIRED, msgFromDB);
+                            }
                         }
+                        readCategories();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        readCategories();
                     }
                 });
-
             }
+        }
+
+        private void readCategories() {
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+            dbRef.child(Constants.USER_INBOX_CATEGORIES).child(mCurrentUser.getUid()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    createCategoryMenu();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        String categoryName = child.getKey();
+                        long messagesCount = child.getChildrenCount();
+                        Log.debug(TAG + "Category " + categoryName + " has " + messagesCount + " message(s)");
+                        populateCategoryMenuItem(categoryName, messagesCount);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
@@ -393,6 +421,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         }
         mCategoryMenu = mNavigationMenu.addSubMenu(MENU_CATEGORY_GROUP_ID, Menu.NONE, Menu.NONE, R.string.nav_inbox_categories);
     }
+
     private void populateCategoryMenuItem(String category, long count) {
         MenuItem item = mCategoryMenu.add(category);
         item.setIcon(R.drawable.ic_action_label);

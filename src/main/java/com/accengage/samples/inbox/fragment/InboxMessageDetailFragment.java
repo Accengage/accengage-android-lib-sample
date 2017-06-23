@@ -17,19 +17,12 @@ import com.accengage.samples.R;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.InboxMessage;
-import com.accengage.samples.inbox.InboxMessagesManager;
 import com.accengage.samples.inbox.InboxNavActivity;
+import com.accengage.samples.inbox.InboxUtils;
 import com.accengage.samples.inbox.InboxViewHolder;
 import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Map;
 
 
 public class InboxMessageDetailFragment extends AccengageFragment {
@@ -118,12 +111,12 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.inbox_msg_actions, menu);
 
-        // Hide actions according to the message (label and archive status)
+        // Hide actions according to the message (label, archive status, etc)
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             int id = item.getItemId();
             if (id == R.id.action_inbox_archive) {
-                if (mMessage.archived) {
+                if (mMessage.archived || mMessage.label.equals(Constants.Inbox.Messages.EXPIRED)) {
                     item.setVisible(false);
                 }
             } else if (id == R.id.action_inbox_delete) {
@@ -138,12 +131,12 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int i = item.getItemId();
         if (i == R.id.action_inbox_archive) {
-            archiveMessage();
+            InboxUtils.archiveMessage(getContext(), mMessage);
             getActivity().getSupportFragmentManager().popBackStack();
             return true;
         } else if (i == R.id.action_inbox_delete) {
-            archiveMessage(); // We need to archive the message to not obtain it any more from Accengage server
-            moveMessageToTrash();
+            InboxUtils.archiveMessage(getContext(), mMessage); // We need to archive the message to not obtain it any more from Accengage server
+            InboxUtils.moveMessageTo(Constants.Inbox.Messages.TRASH, mMessage);
             getActivity().getSupportFragmentManager().popBackStack();
             return true;
         } else if (i == R.id.action_inbox_more) {
@@ -153,42 +146,4 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         }
     }
 
-    private void archiveMessage() {
-        mMessage.archived = true;
-        InboxMessagesManager.get(getContext()).updateMessage(mMessage);
-    }
-
-    private void moveMessageToTrash() {
-        final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.child(Constants.USER_INBOX_MESSAGES).child(mMessage.uid).child(Constants.Inbox.Messages.TRASH).
-                child(mMessage.id).addListenerForSingleValueEvent(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
-                String previousLabel = mMessage.label;
-                mMessage.label = Constants.Inbox.Messages.TRASH;
-                if (msgFromDB == null) {
-                    Log.debug(TAG + "Add message to trash" + mMessage.id);
-                    dataSnapshot.getRef().setValue(mMessage);
-                } else {
-                    Log.warn(TAG + "Inbox message " + msgFromDB.id + " is already existed in the trash");
-                    // check if instances are equal
-                    if (!mMessage.equals(msgFromDB)) {
-                        Log.debug(TAG + "Update Inbox message " + msgFromDB.id + " in trash");
-                        Map<String, Object> msgValues = mMessage.toMap();
-                        dataSnapshot.getRef().updateChildren(msgValues);
-                    }
-                }
-                // Remove the message from the previous location (label)
-                dbRef.child(Constants.USER_INBOX_MESSAGES).child(mMessage.uid).child(previousLabel).
-                        child(mMessage.id).removeValue();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.error(TAG + "onCancelled Inbox message " + databaseError);
-            }
-        });
-    }
 }

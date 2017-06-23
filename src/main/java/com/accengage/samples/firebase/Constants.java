@@ -9,6 +9,7 @@ public abstract class Constants {
     public interface Inbox {
         interface Messages {
             String PRIMARY = "primary";
+            String EXPIRED = "expired";
             String TRASH = "trash";
         }
     }

@@ -11,6 +11,10 @@
             android:icon="@drawable/ic_action_archive"
             android:title="@string/nav_inbox_archive" />
         <item
+            android:id="@+id/nav_inbox_expired"
+            android:icon="@drawable/ic_action_timer_off"
+            android:title="@string/nav_inbox_expired" />
+        <item
             android:id="@+id/nav_inbox_trash"
             android:icon="@drawable/ic_action_delete"
             android:title="@string/nav_inbox_trash" />

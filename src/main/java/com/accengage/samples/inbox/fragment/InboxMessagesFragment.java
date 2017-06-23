@@ -24,6 +24,9 @@ public class InboxMessagesFragment extends InboxListFragment {
                     name = ((InboxNavActivity) getActivity()).isArchived() ? getString(R.string.nav_inbox_archive) :
                             getString(R.string.nav_inbox_primary);
                     break;
+                case Constants.Inbox.Messages.EXPIRED:
+                    name = getString(R.string.nav_inbox_expired);
+                    break;
                 case Constants.Inbox.Messages.TRASH:
                     name = getString(R.string.nav_inbox_trash);
                     break;
