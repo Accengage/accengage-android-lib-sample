@@ -1,6 +1,7 @@
 package com.accengage.samples.inbox;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.accengage.samples.R;
@@ -30,6 +34,8 @@ import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
 import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -67,6 +73,14 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox_nav);
 
+        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (mCurrentUser == null) {
+            Intent intent = AuthActivity.createIntent(this, getClass().getName());
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,22 +92,36 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
         drawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         mNavigationMenu = navigationView.getMenu();
 
-        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mCurrentUser == null) {
-            Intent intent = AuthActivity.createIntent(this, this.getPackageName());
-            startActivity(intent);
-            finish();
-            return;
+        View headerView = navigationView.getHeaderView(0);
+        final ImageView accountImageView = headerView.findViewById(R.id.iv_user_icon);
+        if (mCurrentUser.getPhotoUrl() != null) {
+            Glide.with(this).load(mCurrentUser.getPhotoUrl()).asBitmap().into(new BitmapImageViewTarget(accountImageView) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(InboxNavActivity.this.getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    accountImageView.setImageDrawable(circularBitmapDrawable);
+                }
+            });
         }
+        accountImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = AuthActivity.createIntent(InboxNavActivity.this, InboxNavActivity.this.getClass().getName());
+                startActivity(intent);
+                finish();
+                return;
+            }
+        });
+        TextView accountTextView = headerView.findViewById(R.id.tv_user_name);
+        accountTextView.setText(mCurrentUser.getDisplayName());
 
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mMessageHandler);
         displayFragment(InboxMessagesFragment.class);
