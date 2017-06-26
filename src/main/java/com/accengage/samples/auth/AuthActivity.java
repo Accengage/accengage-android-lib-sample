@@ -41,7 +41,6 @@ public class AuthActivity extends AppCompatActivity {
         } catch (ClassNotFoundException e) {
             Log.d(TAG, "there is no goal activity");
         }
-        Log.d(TAG, "andrei mActivityToStart: " + mActivityToStart);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {

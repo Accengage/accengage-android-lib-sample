@@ -258,7 +258,6 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             // Set on toggle click listener to pop the previous fragment
             mDrawerToggle.setToolbarNavigationClickListener(mNavigationBackPressListener);
         } else {
-            Log.debug("andrei set toggle to default state");
             // Remove the back button
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             // Show the hamburger button
