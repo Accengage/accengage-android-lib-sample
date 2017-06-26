@@ -52,7 +52,9 @@ public class SignedInActivity extends BaseActivity {
     private TextView mUserDisplayName;
     private TextView mEnabledProviders;
     private Button mButtonVerifyEmail;
+    private Button mButtonOk;
 
+    private Class<?> mActivityToStart;
     private IdpResponse mIdpResponse;
 
     private DatabaseReference mDatabase;
@@ -69,6 +71,15 @@ public class SignedInActivity extends BaseActivity {
         mUserDisplayName = findViewById(R.id.user_display_name);
         mEnabledProviders = findViewById(R.id.user_enabled_providers);
         mButtonVerifyEmail = findViewById(R.id.btn_verify_email);
+        mButtonOk = findViewById(R.id.btn_sign_ok);
+
+        String activityName = getIntent().getStringExtra("class_name");
+        try {
+            if (activityName != null)
+                mActivityToStart = Class.forName(activityName);
+        } catch (ClassNotFoundException e) {
+            Log.d(TAG, "there is no goal activity");
+        }
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -81,8 +92,10 @@ public class SignedInActivity extends BaseActivity {
 
         if (currentUser.isEmailVerified()) {
             mButtonVerifyEmail.setEnabled(false);
+            mButtonOk.setEnabled(true);
         } else {
             mButtonVerifyEmail.setEnabled(true);
+            mButtonOk.setEnabled(false);
         }
         mIdpResponse = IdpResponse.fromResultIntent(getIntent());
         populateProfile();
@@ -247,6 +260,7 @@ public class SignedInActivity extends BaseActivity {
                                     "Verification email sent to " + user.getEmail(),
                                     Toast.LENGTH_SHORT).show();
                             mButtonVerifyEmail.setEnabled(false);
+                            mButtonOk.setEnabled(true);
                         } else {
                             Log.e(TAG, "sendEmailVerification", task.getException());
                             Toast.makeText(SignedInActivity.this,
@@ -256,6 +270,13 @@ public class SignedInActivity extends BaseActivity {
                         }
                     }
                 });
+    }
+
+    public void processOk(View v) {
+        if (mActivityToStart != null) {
+            startActivity(new Intent(this, mActivityToStart));
+        }
+        finish();
     }
 
     public static Intent createIntent(Context context, IdpResponse idpResponse) {

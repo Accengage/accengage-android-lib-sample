@@ -42,7 +42,7 @@
     <string name="idp_secret">IDP Secret</string>
     <string name="sign_out_failed">Sign out failed</string>
     <string name="delete_account_failed">Delete account failed</string>
-    <string name="btn_next">Next</string>
+    <string name="btn_ok">ok</string>
     <string name="btn_verify_email">Verify Email</string>
     <string name="btn_check">Check</string>
 

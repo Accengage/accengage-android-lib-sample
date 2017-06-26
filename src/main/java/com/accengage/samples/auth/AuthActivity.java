@@ -34,24 +34,25 @@ public class AuthActivity extends AppCompatActivity {
 
         mRootView = findViewById(R.id.root);
 
+        String activityName = getIntent().getStringExtra("class_name");
+        try {
+            if (activityName != null)
+                mActivityToStart = Class.forName(activityName);
+        } catch (ClassNotFoundException e) {
+            Log.d(TAG, "there is no goal activity");
+        }
+        Log.d(TAG, "andrei mActivityToStart: " + mActivityToStart);
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
-            // already signed in
-            if (savedInstanceState != null) {
-                String activityName = savedInstanceState.getString("class_name");
-                try {
-                    mActivityToStart = Class.forName(activityName);
-                } catch (ClassNotFoundException e) {
-                    Log.d(TAG, "there is no goal activity, start a default one");
-                    startActivity(SignedInActivity.createIntent(this, null));
-                }
+            Intent intent = SignedInActivity.createIntent(this, null);
+            if (mActivityToStart != null) {
+                intent.putExtra("class_name", mActivityToStart.getName());
             }
-            Intent intent = (mActivityToStart != null) ?
-                    new Intent(this, mActivityToStart) :
-                    SignedInActivity.createIntent(this, null);
             startActivity(intent);
             finish();
         }
+
     }
 
     @Override
