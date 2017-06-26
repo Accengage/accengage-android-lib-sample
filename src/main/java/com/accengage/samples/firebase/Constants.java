@@ -8,9 +8,18 @@ public abstract class Constants {
 
     public interface Inbox {
         interface Messages {
-            String PRIMARY = "primary";
-            String EXPIRED = "expired";
-            String TRASH = "trash";
+
+            interface Box {
+                String INBOX = "inbox";
+                String TRASH = "trash";
+            }
+
+            interface Label {
+                String PRIMARY = "primary";
+                String ARCHIVE = "archive";
+                String EXPIRED = "expired";
+                String TRASH = "trash";
+            }
         }
     }
 

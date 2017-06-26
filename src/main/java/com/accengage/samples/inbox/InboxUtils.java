@@ -2,6 +2,7 @@ package com.accengage.samples.inbox;
 
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.InboxMessage;
@@ -20,21 +21,21 @@ public class InboxUtils {
 
     public static void archiveMessage(Context context, InboxMessage message) {
         message.archived = true;
+        message.label = Constants.Inbox.Messages.Label.ARCHIVE;
         InboxMessagesManager.get(context).updateMessage(message);
     }
 
-    public static void moveMessageTo(final String label, final InboxMessage message) {
+    public static void moveMessageTo(final String box, final InboxMessage message) {
         final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(label).
+        dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(box).
                 child(message.id).addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
-                String previousLabel = message.label;
-                message.label = label;
+                message.label = box;
                 if (msgFromDB == null) {
-                    Log.debug(TAG + "Add message " + message.id + " to " + label);
+                    Log.debug(TAG + "Add message " + message.id + " to " + box);
                     dataSnapshot.getRef().setValue(message);
                 } else {
                     Log.warn(TAG + "Inbox message " + msgFromDB.id + " is already existed in the trash");
@@ -46,21 +47,23 @@ public class InboxUtils {
                     }
                 }
                 // Remove the message from the previous location (label)
-                dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(previousLabel)
+                dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.Box.INBOX)
                         .child(message.id).removeValue();
-                // Remove the message id from corresponding category
-                // TODO That's the question if we should remove a message from it's category if the message is in trash/expired
-                // TODO it would be better to do not remove the message from the category but display a trash/expired label on the item view
-                /*if (!TextUtils.isEmpty(mMessage.category)) {
-                    dbRef.child(Constants.USER_INBOX_CATEGORIES).child(mMessage.uid).child(mMessage.category)
-                            .child(mMessage.id).removeValue();
-                }*/
+
+                // We should remove a message from it's category if the message is moved to trash
+                // to not have it in the output result filtered by the corresponding category
+                if (box.equals(Constants.Inbox.Messages.Box.TRASH)) {
+                    if (!TextUtils.isEmpty(message.category)) {
+                        dbRef.child(Constants.USER_INBOX_CATEGORIES).child(message.uid).child(message.category)
+                                .child(message.id).removeValue();
+                    }
+                }
 
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.error(TAG + "onCancelled moveMessageTo " + label + ", error: " + databaseError);
+                Log.error(TAG + "onCancelled moveMessageTo " + box + ", error: " + databaseError);
             }
         });
     }

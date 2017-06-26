@@ -20,14 +20,16 @@ public class InboxMessagesFragment extends InboxListFragment {
 
         if (category == null) {
             switch (label) {
-                case Constants.Inbox.Messages.PRIMARY:
-                    name = ((InboxNavActivity) getActivity()).isArchived() ? getString(R.string.nav_inbox_archive) :
-                            getString(R.string.nav_inbox_primary);
+                case Constants.Inbox.Messages.Label.PRIMARY:
+                    name = getString(R.string.nav_inbox_primary);
                     break;
-                case Constants.Inbox.Messages.EXPIRED:
+                case Constants.Inbox.Messages.Label.ARCHIVE:
+                    name = getString(R.string.nav_inbox_archive);
+                    break;
+                case Constants.Inbox.Messages.Label.EXPIRED:
                     name = getString(R.string.nav_inbox_expired);
                     break;
-                case Constants.Inbox.Messages.TRASH:
+                case Constants.Inbox.Messages.Label.TRASH:
                     name = getString(R.string.nav_inbox_trash);
                     break;
                 default:
@@ -43,23 +45,24 @@ public class InboxMessagesFragment extends InboxListFragment {
 
     @Override
     public Query getQuery(DatabaseReference databaseReference) {
-        boolean isArchived = ((InboxNavActivity) getActivity()).isArchived();
         String label = ((InboxNavActivity) getActivity()).getLabel();
         String category = ((InboxNavActivity) getActivity()).getCategory();
 
-        Query recentPostsQuery = databaseReference.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(label)
-                .limitToFirst(100);
-
+        Query recentPostsQuery;
         if (category == null) {
-            // Primary / Archive / Trash
-            if (label.equals(Constants.Inbox.Messages.PRIMARY)) {
-                recentPostsQuery = recentPostsQuery.orderByChild("archived").equalTo(isArchived);
+            if (label.equals(Constants.Inbox.Messages.Label.TRASH)) {
+                recentPostsQuery = databaseReference.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(Constants.Inbox.Messages.Box.TRASH);
+            } else {
+                recentPostsQuery = databaseReference.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(Constants.Inbox.Messages.Box.INBOX);
+                // Filter by Label (Primary / Archive / Expired)
+                recentPostsQuery = recentPostsQuery.orderByChild("label").equalTo(label);
             }
         } else {
-            // Category
-            recentPostsQuery = recentPostsQuery.orderByChild("category").equalTo(category);
+            // Filter by Category
+            recentPostsQuery = databaseReference.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(Constants.Inbox.Messages.Box.INBOX)
+                                    .orderByChild("category").equalTo(category);
         }
-
+        recentPostsQuery = recentPostsQuery.limitToFirst(100);
 
         return recentPostsQuery;
     }

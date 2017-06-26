@@ -34,7 +34,7 @@ public class InboxMessage {
     //public String trackingURL;
     public String text;
     //public String type;
-    public boolean outdated;
+    public boolean expired;
     public boolean read;
     public boolean archived;
     public boolean displayed;
@@ -62,7 +62,7 @@ public class InboxMessage {
             //this.trackingURL = (String) getProperty(message, "trackingUrl");
             this.text = message.getText();
             //this.type = message.type.name();
-            this.outdated = message.isOutdated();
+            this.expired = message.isOutdated();
             this.read = message.isRead();
             this.archived = message.isArchived();
             this.displayed = message.isDisplayed();
@@ -77,7 +77,7 @@ public class InboxMessage {
         }
 
         this.uid = uid;
-        this.label = Constants.Inbox.Messages.PRIMARY;
+        this.label = Constants.Inbox.Messages.Label.PRIMARY;
     }
 
     @Exclude
@@ -98,7 +98,7 @@ public class InboxMessage {
         result.put("sender", sender);
         result.put("category", category);
         result.put("text", text);
-        result.put("outdated", outdated);
+        result.put("expired", expired);
         result.put("read", read);
         result.put("archived", archived);
         result.put("displayed", displayed);
@@ -127,7 +127,7 @@ public class InboxMessage {
                 sender.equals(msg.sender) &&
                 category.equals(msg.category) &&
                 text.equals(msg.text) &&
-                outdated == msg.outdated &&
+                expired == msg.expired &&
                 read == msg.read &&
                 archived == msg.archived &&
                 displayed == msg.displayed &&
@@ -154,7 +154,7 @@ public class InboxMessage {
         parcel.writeString(text);
         parcel.writeString(contentType);
         parcel.writeString(icon);
-        boolean[] boolArray = {outdated, displayed, read, archived, downloaded};
+        boolean[] boolArray = {expired, displayed, read, archived, downloaded};
         parcel.writeBooleanArray(boolArray);
         // TODO
 //        parcel.writeArray(buttons);
@@ -192,7 +192,9 @@ public class InboxMessage {
 
     @Exclude
     public String getPath() {
-        return "/" + Constants.USER_INBOX_MESSAGES + "/" + uid + "/" + label + "/" + id;
+        String box = (label.equals(Constants.Inbox.Messages.Box.TRASH)) ?
+                Constants.Inbox.Messages.Box.TRASH : Constants.Inbox.Messages.Box.INBOX;
+        return "/" + Constants.USER_INBOX_MESSAGES + "/" + uid + "/" + box + "/" + id;
     }
 
     @Exclude

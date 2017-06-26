@@ -53,8 +53,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
     private ActionBarDrawerToggle mDrawerToggle;
     private FirebaseUser mCurrentUser;
     private InboxMessage mClickedMessage;
-    private boolean mIsArchived = false;
-    private String mLabel = Constants.Inbox.Messages.PRIMARY;
+    private String mLabel = Constants.Inbox.Messages.Label.PRIMARY;
     private String mCategory;
 
     private MessagesHandler mMessageHandler = new MessagesHandler();
@@ -155,15 +154,13 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         mCategory = null;
 
         if (id == R.id.nav_inbox_primary) {
-            mIsArchived = false;
-            mLabel = Constants.Inbox.Messages.PRIMARY;
+            mLabel = Constants.Inbox.Messages.Label.PRIMARY;
         } else if (id == R.id.nav_inbox_archive) {
-            mIsArchived = true;
-            mLabel = Constants.Inbox.Messages.PRIMARY;
+            mLabel = Constants.Inbox.Messages.Label.ARCHIVE;
         } else if (id == R.id.nav_inbox_expired) {
-            mLabel = Constants.Inbox.Messages.EXPIRED;
+            mLabel = Constants.Inbox.Messages.Label.EXPIRED;
         } else if (id == R.id.nav_inbox_trash) {
-            mLabel = Constants.Inbox.Messages.TRASH;
+            mLabel = Constants.Inbox.Messages.Label.TRASH;
         } else {
             mCategory = item.getTitle().toString();
         }
@@ -251,10 +248,6 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         return mClickedMessage;
     }
 
-    public boolean isArchived() {
-        return mIsArchived;
-    }
-
     public String getLabel() {
         return mLabel;
     }
@@ -297,7 +290,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
         private void writeMessage(final InboxMessage message) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-            dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.PRIMARY).
+            dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.Box.INBOX).
                     child(message.id).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
@@ -369,7 +362,8 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
             if (mReceivedMessageCount == mHandledMessageCount) {
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-                dbRef.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(Constants.Inbox.Messages.PRIMARY)
+                dbRef.child(Constants.USER_INBOX_MESSAGES).child(mCurrentUser.getUid()).child(Constants.Inbox.Messages.Box.INBOX)
+                        .orderByChild("label").equalTo(Constants.Inbox.Messages.Label.PRIMARY)
                         .addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
@@ -377,9 +371,11 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             InboxMessage msgFromDB = child.getValue(InboxMessage.class);
                             if (!mReceivedMessageIds.contains(msgFromDB.id)) {
-                                Log.debug(TAG + "Message " + msgFromDB.id + " is expired, move it to Expired");
-                                msgFromDB.outdated = true;
-                                InboxUtils.moveMessageTo(Constants.Inbox.Messages.EXPIRED, msgFromDB);
+                                Log.debug(TAG + "Message " + msgFromDB.id + " is expired, update expired");
+                                msgFromDB.expired = true;
+                                msgFromDB.label = Constants.Inbox.Messages.Label.EXPIRED;
+                                Map<String, Object> msgValues = msgFromDB.toMap();
+                                dataSnapshot.child(msgFromDB.id).getRef().updateChildren(msgValues);
                             }
                         }
                         readCategories();

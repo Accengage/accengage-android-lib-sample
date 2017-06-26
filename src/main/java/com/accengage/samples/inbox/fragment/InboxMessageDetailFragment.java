@@ -116,11 +116,11 @@ public class InboxMessageDetailFragment extends AccengageFragment {
             MenuItem item = menu.getItem(i);
             int id = item.getItemId();
             if (id == R.id.action_inbox_archive) {
-                if (mMessage.archived || mMessage.label.equals(Constants.Inbox.Messages.EXPIRED)) {
+                if (mMessage.archived || mMessage.label.equals(Constants.Inbox.Messages.Label.EXPIRED)) {
                     item.setVisible(false);
                 }
             } else if (id == R.id.action_inbox_delete) {
-                if (mMessage.label.equals(Constants.Inbox.Messages.TRASH)) {
+                if (mMessage.label.equals(Constants.Inbox.Messages.Label.TRASH)) {
                     item.setVisible(false);
                 }
             }
@@ -136,7 +136,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
             return true;
         } else if (i == R.id.action_inbox_delete) {
             InboxUtils.archiveMessage(getContext(), mMessage); // We need to archive the message to not obtain it any more from Accengage server
-            InboxUtils.moveMessageTo(Constants.Inbox.Messages.TRASH, mMessage);
+            InboxUtils.moveMessageTo(Constants.Inbox.Messages.Box.TRASH, mMessage);
             getActivity().getSupportFragmentManager().popBackStack();
             return true;
         } else if (i == R.id.action_inbox_more) {
