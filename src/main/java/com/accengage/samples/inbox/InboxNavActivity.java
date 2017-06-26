@@ -120,8 +120,10 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                 return;
             }
         });
-        TextView accountTextView = headerView.findViewById(R.id.tv_user_name);
-        accountTextView.setText(mCurrentUser.getDisplayName());
+        TextView nameView = headerView.findViewById(R.id.tv_user_name);
+        nameView.setText(mCurrentUser.getDisplayName());
+        TextView emailView = headerView.findViewById(R.id.tv_user_email);
+        emailView.setText(mCurrentUser.getEmail());
 
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mMessageHandler);
         displayFragment(InboxMessagesFragment.class);
