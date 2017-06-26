@@ -3,7 +3,6 @@ package com.accengage.samples.inbox;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -14,7 +13,7 @@ import android.widget.TextView;
 import com.accengage.samples.R;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.ad4screen.sdk.Message;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 public class InboxViewHolder extends RecyclerView.ViewHolder {
 
@@ -68,15 +67,11 @@ public class InboxViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public static void loadAndSetIcon(Context context, final ImageView imageView, String path) {
-        Picasso.Builder picassoBuilder = new Picasso.Builder(context);
-        picassoBuilder.listener(new Picasso.Listener() {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                imageView.setImageResource(0);
-            }
-        });
-        picassoBuilder.build().load(path).into(imageView);
+    public static void loadAndSetIcon(Context context, final ImageView imageView, String url) {
+        Glide.with(context)
+                .load(url)
+                .fitCenter()
+                .into(imageView);
     }
 
     public InboxMessage getMessage() {
