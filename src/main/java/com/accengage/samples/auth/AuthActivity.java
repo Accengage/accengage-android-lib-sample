@@ -16,6 +16,7 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class AuthActivity extends AppCompatActivity {
@@ -42,8 +43,8 @@ public class AuthActivity extends AppCompatActivity {
             Log.d(TAG, "there is no goal activity");
         }
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
             Intent intent = SignedInActivity.createIntent(this, null);
             if (mActivityToStart != null) {
                 intent.putExtra("class_name", mActivityToStart.getName());
@@ -79,6 +80,8 @@ public class AuthActivity extends AppCompatActivity {
         if (resultCode == ResultCodes.OK) {
             Log.i(TAG, "sign-in token " + response.getIdpToken());
             if (mActivityToStart != null) {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                AuthUtils.writeUser(currentUser);
                 startActivity(new Intent(this, mActivityToStart));
             } else {
                 startActivity(SignedInActivity.createIntent(this, response));
