@@ -31,7 +31,7 @@ import com.accengage.samples.base.BaseActivity;
 import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
-import com.ad4screen.sdk.Acc;
+import com.ad4screen.sdk.A4S;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 import com.bumptech.glide.Glide;
@@ -244,7 +244,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         if (fragment instanceof AccengageFragment) {
             String viewName =  fragment.getViewName(this);
             if (viewName != null) {
-                Acc.get(this).setView(viewName);
+                A4S.get(this).setView(viewName);
                 setTitle(viewName);
                 //checkMenuItemWithName(viewName);
                 //mCurrentView = viewName;

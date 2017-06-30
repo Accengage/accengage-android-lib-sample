@@ -3,7 +3,7 @@ package com.accengage.samples.inbox;
 import android.content.Context;
 
 import com.accengage.samples.firebase.models.InboxMessage;
-import com.ad4screen.sdk.Acc;
+import com.ad4screen.sdk.A4S;
 import com.ad4screen.sdk.Inbox;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
@@ -79,7 +79,7 @@ public class InboxMessagesManager {
         Message accMessage = getMessage(inboxMessage.id);
         if (accMessage != null) {
             if (inboxMessage.updateAccMessage(accMessage)) {
-                Acc.get(mContext).updateMessages(mInbox);
+                A4S.get(mContext).updateMessages(mInbox);
             }
         } else {
             Log.warn("There is no accengage message '" + inboxMessage.id + "' check a connection with Accengage server");
@@ -97,7 +97,7 @@ public class InboxMessagesManager {
         public void subscribe(ObservableEmitter<Message> subscriber) throws Exception {
 
             mSubscriber = subscriber;
-            Acc.get(mContext).getInbox(new Acc.Callback<Inbox>() {
+            A4S.get(mContext).getInbox(new A4S.Callback<Inbox>() {
                 @Override
                 public void onResult(Inbox result) {
 
@@ -113,7 +113,7 @@ public class InboxMessagesManager {
 
                             Log.debug("There is(are) " + mCounter + " Inbox message(s)");
                             for (int i = 0; i < mInbox.countMessages(); i++) {
-                                mInbox.getMessage(i, new Acc.MessageCallback() {
+                                mInbox.getMessage(i, new A4S.MessageCallback() {
 
                                     @Override
                                     public void onResult(com.ad4screen.sdk.Message msg, final int index) {
