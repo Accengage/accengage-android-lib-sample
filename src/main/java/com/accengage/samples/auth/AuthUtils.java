@@ -1,8 +1,11 @@
 package com.accengage.samples.auth;
 
 
+import android.text.TextUtils;
+
 import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.User;
+import com.accengage.samples.tracking.Tracker;
 import com.ad4screen.sdk.Log;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,5 +40,12 @@ public class AuthUtils {
                 Log.warn(TAG + "writeUser onCancelled: " + databaseError.toString());
             }
         });
+    }
+
+    public static void sendUserInfo(Tracker tracker, FirebaseUser fabUser) {
+        String name = TextUtils.isEmpty(fabUser.getDisplayName()) ? "No display name" : fabUser.getDisplayName();
+        String email = TextUtils.isEmpty(fabUser.getEmail()) ? "No email" : fabUser.getEmail();
+        tracker.updateDeviceInfo("acc_user_name", name);
+        tracker.updateDeviceInfo("acc_user_email", email);
     }
 }

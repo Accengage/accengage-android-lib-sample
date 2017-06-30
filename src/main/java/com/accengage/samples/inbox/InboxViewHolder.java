@@ -1,8 +1,11 @@
 package com.accengage.samples.inbox;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -14,6 +17,7 @@ import com.accengage.samples.R;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.ad4screen.sdk.Message;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 public class InboxViewHolder extends RecyclerView.ViewHolder {
 
@@ -67,11 +71,15 @@ public class InboxViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public static void loadAndSetIcon(Context context, final ImageView imageView, String url) {
-        Glide.with(context)
-                .load(url)
-                .fitCenter()
-                .into(imageView);
+    public static void loadAndSetIcon(final Context context, final ImageView imageView, String url) {
+        Glide.with(context).load(url).asBitmap().into(new BitmapImageViewTarget(imageView) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+                imageView.setImageDrawable(circularBitmapDrawable);
+            }
+        });
     }
 
     public InboxMessage getMessage() {

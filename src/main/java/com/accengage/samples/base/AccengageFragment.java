@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.accengage.samples.tracking.FirebaseTracker;
 import com.accengage.samples.tracking.Tracker;
+import com.accengage.samples.tracking.Trackers;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -52,7 +52,7 @@ public abstract class AccengageFragment extends Fragment {
     }
 
     protected Tracker getTracker() {
-        return new FirebaseTracker(this.getContext());
+        return new Trackers(this.getContext());
     }
 
     public void onCreatingView(View fragmentView) {

@@ -41,7 +41,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="5dp"
                 android:gravity="right"
-                android:src="@drawable/ic_toggle_star_outline_24" />
+                android:src="@drawable/ic_action_star_border" />
 
         </LinearLayout>
 

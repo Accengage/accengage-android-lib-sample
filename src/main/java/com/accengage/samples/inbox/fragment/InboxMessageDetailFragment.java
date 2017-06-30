@@ -1,6 +1,7 @@
 package com.accengage.samples.inbox.fragment;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -79,6 +80,9 @@ public class InboxMessageDetailFragment extends AccengageFragment {
                         mWebView.setWebViewClient(new WebViewClient());
                         WebSettings webSettings = mWebView.getSettings();
                         webSettings.setJavaScriptEnabled(true);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                        }
                         mWebView.loadUrl(mMessage.body);
                         mBody.setVisibility(View.GONE);
                     }
