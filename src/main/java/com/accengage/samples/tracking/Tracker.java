@@ -20,4 +20,5 @@ public interface Tracker {
     void trackMessageDisplay(String messageId);
 
     void trackMessageClick(String messageId);
+
 }

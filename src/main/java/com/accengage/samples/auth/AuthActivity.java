@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.accengage.samples.R;
+import com.accengage.samples.tracking.Trackers;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -82,6 +83,7 @@ public class AuthActivity extends AppCompatActivity {
             if (mActivityToStart != null) {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 AuthUtils.writeUser(currentUser);
+                AuthUtils.sendUserInfo(new Trackers(this), currentUser);
                 startActivity(new Intent(this, mActivityToStart));
             } else {
                 startActivity(SignedInActivity.createIntent(this, response));
