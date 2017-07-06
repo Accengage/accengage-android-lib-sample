@@ -116,6 +116,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mMessageHandler);
         displayFragment(InboxMessagesFragment.class);
+        navigationView.setCheckedItem(R.id.nav_inbox_primary);
     }
 
     private View.OnClickListener mNavigationBackPressListener = new View.OnClickListener() {
