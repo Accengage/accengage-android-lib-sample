@@ -157,7 +157,7 @@ public class MyNotificationClientCreator implements NotificationClientCreator {
     }
 
     @Override
-    public NotificationCompat.Builder getNotificationBuilder(Context context, NotificationCompat.Builder notificationBuilder, Bundle customParams) {
+    public android.support.v4.app.NotificationCompat.Builder getNotificationBuilder(Context context, android.support.v4.app.NotificationCompat.Builder notificationBuilder, Bundle customParams) {
         Log.info("MyNotificationClientCreator|getNotificationBuilder called");
         return null;
     }

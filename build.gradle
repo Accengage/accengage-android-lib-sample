@@ -8,13 +8,26 @@ ext.supportVersion="25.1.1"
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode samplesVersionCode
         versionName samplesVersionName
+    }
+
+    flavorDimensions "env"
+    productFlavors {
+        prod {
+            dimension "env"
+        }
+        preprod {
+            dimension "env"
+        }
+        dev {
+            dimension "env"
+        }
     }
 }
 
@@ -39,11 +52,10 @@ dependencies {
     compile 'com.android.support:support-v4:'+supportVersion
     compile 'com.android.support:appcompat-v7:'+supportVersion
 
-    debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT-3.6.0', changing: true
-    releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
+    //debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: 'SNAPSHOT-3.6.0', changing: true
+    //releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
 
-    //debugCompile project(path: ':A4SSDK-src', configuration: 'prodDebug')
-    //releaseCompile project(path: ':A4SSDK-src', configuration: 'prodRelease')
+    api project(':A4SSDK-src')
 }
 
 publishing.repositories {
