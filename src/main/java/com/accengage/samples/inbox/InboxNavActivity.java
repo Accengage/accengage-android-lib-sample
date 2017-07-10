@@ -79,17 +79,17 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             return;
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mNavigationMenu = navigationView.getMenu();
 
         View headerView = navigationView.getHeaderView(0);
-        final ImageView accountImageView = headerView.findViewById(R.id.iv_user_icon);
+        final ImageView accountImageView = (ImageView) headerView.findViewById(R.id.iv_user_icon);
         if (mCurrentUser.getPhotoUrl() != null) {
             Glide.with(this).load(mCurrentUser.getPhotoUrl()).asBitmap().into(new BitmapImageViewTarget(accountImageView) {
                 @Override
@@ -109,9 +109,9 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                 return;
             }
         });
-        TextView nameView = headerView.findViewById(R.id.tv_user_name);
+        TextView nameView = (TextView) headerView.findViewById(R.id.tv_user_name);
         nameView.setText(mCurrentUser.getDisplayName());
-        TextView emailView = headerView.findViewById(R.id.tv_user_email);
+        TextView emailView = (TextView) headerView.findViewById(R.id.tv_user_email);
         emailView.setText(mCurrentUser.getEmail());
 
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mMessageHandler);
@@ -128,7 +128,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -186,7 +186,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         }
         replaceFragment(InboxMessagesFragment.class);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -224,7 +224,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
 

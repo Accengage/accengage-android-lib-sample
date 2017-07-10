@@ -51,12 +51,12 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     public void onCreatingView(View fragmentView) {
         super.onCreatingView(fragmentView);
 
-        mSender = fragmentView.findViewById(R.id.inbox_msg_sender);
-        mTitle = fragmentView.findViewById(R.id.inbox_msg_title);
-        mBody = fragmentView.findViewById(R.id.inbox_msg_body);
-        mWebView = fragmentView.findViewById(R.id.inbox_msg_webview);
-        mIconView = fragmentView.findViewById(R.id.inbox_msg_sender_photo);
-        mSentTime = fragmentView.findViewById(R.id.inbox_msg_sent_time);
+        mSender = (TextView) fragmentView.findViewById(R.id.inbox_msg_sender);
+        mTitle = (TextView) fragmentView.findViewById(R.id.inbox_msg_title);
+        mBody = (TextView) fragmentView.findViewById(R.id.inbox_msg_body);
+        mWebView = (WebView) fragmentView.findViewById(R.id.inbox_msg_webview);
+        mIconView = (ImageView) fragmentView.findViewById(R.id.inbox_msg_sender_photo);
+        mSentTime = (TextView) fragmentView.findViewById(R.id.inbox_msg_sent_time);
 
         mSender.setText(mMessage.sender);
         mSentTime.setText(mMessage.getFormatedDateTime());
