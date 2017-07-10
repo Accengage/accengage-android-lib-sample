@@ -57,12 +57,12 @@ public class SignedInActivity extends BaseActivity {
         setContentView(R.layout.activity_signed_in);
 
         mRootView = findViewById(android.R.id.content);
-        mUserProfilePicture = findViewById(R.id.user_profile_picture);
-        mUserEmail = findViewById(R.id.user_email);
-        mUserDisplayName = findViewById(R.id.user_display_name);
-        mEnabledProviders = findViewById(R.id.user_enabled_providers);
-        mButtonVerifyEmail = findViewById(R.id.btn_verify_email);
-        mButtonOk = findViewById(R.id.btn_sign_ok);
+        mUserProfilePicture = (ImageView) findViewById(R.id.user_profile_picture);
+        mUserEmail = (TextView) findViewById(R.id.user_email);
+        mUserDisplayName = (TextView) findViewById(R.id.user_display_name);
+        mEnabledProviders = (TextView) findViewById(R.id.user_enabled_providers);
+        mButtonVerifyEmail = (Button) findViewById(R.id.btn_verify_email);
+        mButtonOk = (Button) findViewById(R.id.btn_sign_ok);
 
         String activityName = getIntent().getStringExtra("class_name");
         try {
