@@ -117,16 +117,9 @@ public class InboxMessagesManager {
 
                                     @Override
                                     public void onResult(com.ad4screen.sdk.Message msg, final int index) {
-                                        try {
-                                            String id = (String) InboxMessage.getProperty(msg, "id");
-                                            Log.debug("onResult message id: " + id + ", title: " + msg.getTitle());
-                                            mMessageMap.put(id, msg);
-                                            mSubscriber.onNext(msg);
-                                        } catch (NoSuchFieldException e) {
-                                            e.printStackTrace();
-                                        } catch (IllegalAccessException e) {
-                                            e.printStackTrace();
-                                        }
+                                        Log.debug("onResult message id: " + msg.getId() + ", title: " + msg.getTitle());
+                                        mMessageMap.put(msg.getId(), msg);
+                                        mSubscriber.onNext(msg);
                                         if (--mCounter == 0) {
                                             notifyIfWaiting();
                                         }

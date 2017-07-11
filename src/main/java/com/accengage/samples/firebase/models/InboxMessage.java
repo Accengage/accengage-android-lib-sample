@@ -8,7 +8,6 @@ import com.ad4screen.sdk.Message;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,18 +27,14 @@ public class InboxMessage {
     public String contentType;
     public String sendDate;
     public String body;
-    //public String data;
     public String sender;
     public String category;
-    //public String trackingURL;
     public String text;
-    //public String type;
     public boolean expired;
     public boolean read;
     public boolean archived;
     public boolean displayed;
     public boolean downloaded;
-    //public boolean updated;
     public String icon;
 
     public String uid;
@@ -51,40 +46,23 @@ public class InboxMessage {
 
     public InboxMessage(Message message, String uid) {
 
-        try {
-            this.id = (String) getProperty(message, "id");
-            this.title = message.getTitle();
-            this.sendDate = convertDateToString(message.getSendDate());
-            this.body = message.getBody();
-            //this.data = (String) getProperty(message, "data");
-            this.sender = message.getSender();
-            this.category = message.getCategory();
-            //this.trackingURL = (String) getProperty(message, "trackingUrl");
-            this.text = message.getText();
-            //this.type = message.type.name();
-            this.expired = message.isOutdated();
-            this.read = message.isRead();
-            this.archived = message.isArchived();
-            this.displayed = message.isDisplayed();
-            this.downloaded = message.isDownloaded();
-            //this.updated = (boolean) getProperty(message, "updated");
-            this.icon = (String) getProperty(message, "icon");
-            this.contentType = message.getContentType().name();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        this.id = message.getId();
+        this.title = message.getTitle();
+        this.sendDate = convertDateToString(message.getSendDate());
+        this.body = message.getBody();
+        this.sender = message.getSender();
+        this.category = message.getCategory();
+        this.text = message.getText();
+        this.expired = message.isOutdated();
+        this.read = message.isRead();
+        this.archived = message.isArchived();
+        this.displayed = message.isDisplayed();
+        this.downloaded = message.isDownloaded();
+        this.icon = message.getUrlIcon();
+        this.contentType = message.getContentType().name();
 
         this.uid = uid;
         this.label = Constants.Inbox.Messages.Label.PRIMARY;
-    }
-
-    @Exclude
-    public static Object getProperty(Message message, String propertyName) throws NoSuchFieldException, IllegalAccessException {
-        Field f = Message.class.getDeclaredField(propertyName);
-        f.setAccessible(true);
-        return f.get(message);
     }
 
     @Exclude
