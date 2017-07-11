@@ -74,7 +74,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
 
                 if (mMessage.contentType.equals(Message.MessageContentType.Web.name())) {
                     Log.debug(TAG + "message with a web content");
-                    if (mMessage.body != null) {
+                    if (!TextUtils.isEmpty(mMessage.body)) {
                         Log.debug(TAG + "message with a web body is not null " + mMessage.body);
                         mWebView.setVisibility(View.VISIBLE);
                         mWebView.setWebViewClient(new WebViewClient());
@@ -85,6 +85,11 @@ public class InboxMessageDetailFragment extends AccengageFragment {
                         }
                         mWebView.loadUrl(mMessage.body);
                         mBody.setVisibility(View.GONE);
+                    } else {
+                        if (!TextUtils.isEmpty(mMessage.text)) {
+                            mBody.setText(mMessage.text);
+                            mBody.setVisibility(View.VISIBLE);
+                        }
                     }
                 } else {
                     Log.debug(TAG + "message with an other content: " + mMessage.contentType);
