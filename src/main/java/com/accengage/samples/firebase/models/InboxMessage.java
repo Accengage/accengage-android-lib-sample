@@ -11,8 +11,10 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -36,12 +38,15 @@ public class InboxMessage {
     public boolean displayed;
     public boolean downloaded;
     public String icon;
+    public int buttonCount;
+    public List<InboxButton> buttons;
 
     public String uid;
     public String label;
 
     public InboxMessage() {
-        // Default constructor required for calls to DataSnapshot.getValue(Post.class)
+        // Default constructor required for calls to DataSnapshot.getValue(InboxMessage.class)
+        buttons = new ArrayList<>(0);
     }
 
     public InboxMessage(Message message, String uid) {
@@ -60,6 +65,12 @@ public class InboxMessage {
         this.downloaded = message.isDownloaded();
         this.icon = message.getUrlIcon();
         this.contentType = message.getContentType().name();
+        this.buttonCount = message.countButtons();
+        this.buttons = new ArrayList<>(buttonCount);
+        for (int i = 0; i < buttonCount; i++) {
+            Message.Button button = message.getButton(i);
+            buttons.add(new InboxButton(id, button));
+        }
 
         this.uid = uid;
         this.label = Constants.Inbox.Messages.Label.PRIMARY;
@@ -84,6 +95,7 @@ public class InboxMessage {
         result.put("icon", icon);
         result.put("uid", uid);
         result.put("label", label);
+        result.put("buttonCount", buttonCount);
         return result;
     }
 
@@ -114,7 +126,13 @@ public class InboxMessage {
                 uid.equals(msg.uid) &&
                 label.equals(msg.label)
                 ) {
-            return true;
+
+            // Check buttons
+            if (buttonCount == msg.buttonCount && buttons.equals(msg.buttons)) {
+                return true;
+            }
+
+            return false;
         }
         return false;
     }
@@ -134,8 +152,8 @@ public class InboxMessage {
         parcel.writeString(icon);
         boolean[] boolArray = {expired, displayed, read, archived, downloaded};
         parcel.writeBooleanArray(boolArray);
+        parcel.writeArray(getAccButtons());
         // TODO
-//        parcel.writeArray(buttons);
 //        if (params != null) {
 //            parcel.writeInt(params.size());
 //            for (String s : params.keySet()) {
@@ -151,7 +169,20 @@ public class InboxMessage {
     }
 
     @Exclude
-    public boolean updateAccMessage(Message message) {
+    private Message.Button[] getAccButtons() {
+        if (buttonCount == 0)
+            return null;
+
+        int i = 0;
+        Message.Button[] accButtons = new Message.Button[buttonCount];
+        for (InboxButton button : buttons) {
+            accButtons[i] = button.getAccButton();
+        }
+        return accButtons;
+    }
+
+    @Exclude
+    public boolean isUpdateRequiredForAccMessage(Message message) {
         boolean updated = false;
         if (message.isRead() != read) {
             updated = true;

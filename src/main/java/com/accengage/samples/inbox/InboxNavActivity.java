@@ -27,6 +27,7 @@ import com.accengage.samples.auth.AuthActivity;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.base.BaseActivity;
 import com.accengage.samples.firebase.Constants;
+import com.accengage.samples.firebase.models.InboxButton;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
 import com.ad4screen.sdk.A4S;
@@ -281,8 +282,8 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         private int mReceivedMessageCount = 0;
         private int mHandledMessageCount = 0;
 
-        private abstract class CategoryEventListener {
-            abstract void onCategoryDone();
+        private abstract class MethodEventListener {
+            abstract void onMethodDone();
         }
 
         @Override
@@ -308,33 +309,43 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         }
 
         private void writeMessage(final InboxMessage message) {
+            Log.debug(TAG + "Write message " + message.id);
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
             dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.Box.INBOX).
                     child(message.id).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onDataChange(final DataSnapshot dataSnapshot) {
                     InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
                     if (msgFromDB == null) {
                         Log.debug(TAG + "Add new inbox message " + message.id);
                         dataSnapshot.getRef().setValue(message);
-                        writeCategory(message, new CategoryEventListener() {
+                        writeCategory(message, new MethodEventListener() {
                             @Override
-                            public void onCategoryDone() {
+                            public void onMethodDone() {
                                 mHandledMessageCount++;
-                                readCategories();
+                                checkExpiredMessagesAndReadCategories();
                             }
                         });
                     } else {
                         Log.debug(TAG + "Inbox message " + msgFromDB.id + " is already existed in the DB");
                         // check if instances are equal
                         if (!message.equals(msgFromDB)) {
-                            Log.debug("Update Inbox message " + msgFromDB.id);
+                            Log.debug(TAG + "Update Inbox message " + msgFromDB.id);
                             Map<String, Object> msgValues = message.toMap();
                             dataSnapshot.getRef().updateChildren(msgValues);
+                            // Update inbox buttons
+                            updateInboxButtons(message, new MethodEventListener() {
+                                @Override
+                                public void onMethodDone() {
+                                    mHandledMessageCount++;
+                                    checkExpiredMessagesAndReadCategories();
+                                }
+                            });
+                        } else {
+                            mHandledMessageCount++;
+                            checkExpiredMessagesAndReadCategories();
                         }
-                        mHandledMessageCount++;
-                        checkExpiredMessagesAndReadCategories();
                     }
                 }
 
@@ -345,7 +356,40 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             });
         }
 
-        private void writeCategory(final InboxMessage inboxMessage, final CategoryEventListener listener) {
+        private void updateInboxButtons(final InboxMessage message, final MethodEventListener listener) {
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+            dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.Box.INBOX).
+                    child(message.id).child("buttons").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    int i = 0;
+                    if (dataSnapshot.getChildrenCount() != message.buttonCount) {
+                        Log.debug(TAG + "Remove all buttons for message " + message.id);
+                        dataSnapshot.getRef().removeValue();
+                        Log.debug(TAG + "Add all buttons for message " + message.id);
+                        dataSnapshot.getRef().setValue(message.buttons);
+                    } else {
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                            InboxButton button = child.getValue(InboxButton.class);
+                            Log.debug(TAG + "Update button_" + i + ", with id: " + button.id + " for message " + button.messageId);
+                            Map<String, Object> values = message.buttons.get(i).toMap();
+                            child.getRef().updateChildren(values);
+                            i++;
+                        }
+                    }
+                    listener.onMethodDone();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.debug(TAG + "onCancelled Inbox buttons " + databaseError);
+                    listener.onMethodDone();
+                }
+            });
+        }
+
+        private void writeCategory(final InboxMessage inboxMessage, final MethodEventListener listener) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
             if (!TextUtils.isEmpty(inboxMessage.category)) {
@@ -361,17 +405,17 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                         } else {
                             Log.debug(TAG + "A message " + inboxMessage.id + " is already existed in category " + inboxMessage.category);
                         }
-                        listener.onCategoryDone();
+                        listener.onMethodDone();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.debug(TAG + "onCancelled Inbox category " + databaseError);
-                        listener.onCategoryDone();
+                        listener.onMethodDone();
                     }
                 });
             } else {
-                listener.onCategoryDone();
+                listener.onMethodDone();
             }
         }
 

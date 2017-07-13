@@ -78,7 +78,7 @@ public class InboxMessagesManager {
         // Update Accengage inbox
         Message accMessage = getMessage(inboxMessage.id);
         if (accMessage != null) {
-            if (inboxMessage.updateAccMessage(accMessage)) {
+            if (inboxMessage.isUpdateRequiredForAccMessage(accMessage)) {
                 A4S.get(mContext).updateMessages(mInbox);
             }
         } else {
