@@ -35,6 +35,10 @@ android {
         dev {
             dimension "env"
         }
+        envtest {
+            minSdkVersion 18
+            dimension "env"
+        }
     }
 }
 
