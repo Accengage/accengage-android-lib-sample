@@ -49,4 +49,9 @@ public class AccengageTracker implements Tracker {
         //A4S.get(mContext).trackInboxClick(messageId); // TODO make public in Acc.java
     }
 
+    @Override
+    public void trackMessageButtonClick(String messageId, String buttonId, String title) {
+        //A4S.get(mContext).trackInboxButtonClick(messageId, buttonId); // TODO make public in Acc.java
+    }
+
 }

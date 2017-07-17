@@ -21,4 +21,6 @@ public interface Tracker {
 
     void trackMessageClick(String messageId);
 
+    void trackMessageButtonClick(String messageId, String buttonId, String title);
+
 }

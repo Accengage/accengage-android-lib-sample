@@ -72,4 +72,11 @@ public class Trackers implements Tracker {
             tracker.trackMessageClick(messageId);
         }
     }
+
+    @Override
+    public void trackMessageButtonClick(String messageId, String buttonId, String title) {
+        for(Tracker tracker : mTrackers) {
+            tracker.trackMessageButtonClick(messageId, buttonId, title);
+        }
+    }
 }

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.accengage.samples.R;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.firebase.Constants;
+import com.accengage.samples.firebase.models.InboxButton;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.InboxNavActivity;
 import com.accengage.samples.inbox.InboxUtils;
@@ -120,7 +121,10 @@ public class InboxMessageDetailFragment extends AccengageFragment {
                             public void onClick(View v) {
                                 int index = (Integer) v.getTag();
                                 Message.Button accInboxButton = mMessage.buttons.get(index).getAccButton();
-                                accInboxButton.hasBeenClickedByUser(getContext()); // TODO track Firebase event
+                                InboxButton fabInboxButton = mMessage.buttons.get(index);
+                                getTracker().trackMessageButtonClick(mMessage.id, fabInboxButton.id, fabInboxButton.title); // Implemented only for Firebase
+                                accInboxButton.hasBeenClickedByUser(getContext()); // TODO Tracking should be done in AccengageTracker, this line must be removed
+
                                 accInboxButton.click(getContext());
                             }
                         });
