@@ -1,6 +1,7 @@
 package com.accengage.samples.inbox.fragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,7 +12,9 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.accengage.samples.R;
@@ -38,6 +41,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     private WebView mWebView;
     private ImageView mIconView;
     private TextView mSentTime;
+    private LinearLayout mButtonsLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         mWebView = (WebView) fragmentView.findViewById(R.id.inbox_msg_webview);
         mIconView = (ImageView) fragmentView.findViewById(R.id.inbox_msg_sender_photo);
         mSentTime = (TextView) fragmentView.findViewById(R.id.inbox_msg_sent_time);
+        mButtonsLayout = (LinearLayout) fragmentView.findViewById(R.id.inbox_buttons_layout);
 
         mSender.setText(mMessage.sender);
         mSentTime.setText(mMessage.getFormatedDateTime());
@@ -96,6 +101,35 @@ public class InboxMessageDetailFragment extends AccengageFragment {
                     mWebView.setVisibility(View.GONE);
                     mBody.setText(mMessage.body);
                     mBody.setVisibility(View.VISIBLE);
+                }
+
+
+                if (mMessage.buttonCount > 0) {
+                    mButtonsLayout.setVisibility(View.VISIBLE);
+                    for (int i = 0; i < mMessage.buttonCount; i++) {
+                        Button button = new Button(getActivity().getApplicationContext());
+                        button.setText(mMessage.buttons.get(i).title);
+                        button.setTextColor(Color.WHITE);
+                        button.setBackgroundColor(Color.parseColor("#007AFF"));
+                        button.setPadding(10, 2, 10, 2);
+                        button.setTag(i);
+
+                        button.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                int index = (Integer) v.getTag();
+                                Message.Button accInboxButton = mMessage.buttons.get(index).getAccButton();
+                                accInboxButton.hasBeenClickedByUser(getContext()); // TODO track Firebase event
+                                accInboxButton.click(getContext());
+                            }
+                        });
+
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.5f);
+                        params.leftMargin = 20;
+                        params.rightMargin = 20;
+                        mButtonsLayout.addView(button, params);
+                    }
                 }
             }
 
