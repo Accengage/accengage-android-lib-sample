@@ -31,13 +31,6 @@ public class InboxButton {
         this.messageId = messageId;
     }
 
-    protected InboxButton(Parcel in) {
-        position = in.readInt();
-        id = in.readString();
-        title = in.readString();
-        messageId = in.readString();
-    }
-
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
