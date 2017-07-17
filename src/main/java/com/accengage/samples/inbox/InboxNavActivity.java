@@ -27,7 +27,6 @@ import com.accengage.samples.auth.AuthActivity;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.base.BaseActivity;
 import com.accengage.samples.firebase.Constants;
-import com.accengage.samples.firebase.models.InboxButton;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
 import com.ad4screen.sdk.A4S;
@@ -334,57 +333,15 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                             Log.debug(TAG + "Update Inbox message " + msgFromDB.id);
                             Map<String, Object> msgValues = message.toMap();
                             dataSnapshot.getRef().updateChildren(msgValues);
-                            // Update inbox buttons
-                            updateInboxButtons(message, new MethodEventListener() {
-                                @Override
-                                public void onMethodDone() {
-                                    mHandledMessageCount++;
-                                    checkExpiredMessagesAndReadCategories();
-                                }
-                            });
-                        } else {
-                            mHandledMessageCount++;
-                            checkExpiredMessagesAndReadCategories();
                         }
+                        mHandledMessageCount++;
+                        checkExpiredMessagesAndReadCategories();
                     }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     Log.debug(TAG + "onCancelled Inbox message " + databaseError);
-                }
-            });
-        }
-
-        private void updateInboxButtons(final InboxMessage message, final MethodEventListener listener) {
-            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-            dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.Box.INBOX).
-                    child(message.id).child("buttons").addListenerForSingleValueEvent(new ValueEventListener() {
-
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    int i = 0;
-                    if (dataSnapshot.getChildrenCount() != message.buttonCount) {
-                        Log.debug(TAG + "Remove all buttons for message " + message.id);
-                        dataSnapshot.getRef().removeValue();
-                        Log.debug(TAG + "Add all buttons for message " + message.id);
-                        dataSnapshot.getRef().setValue(message.buttons);
-                    } else {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            InboxButton button = child.getValue(InboxButton.class);
-                            Log.debug(TAG + "Update button_" + i + ", with id: " + button.id + " for message " + button.messageId);
-                            Map<String, Object> values = message.buttons.get(i).toMap();
-                            child.getRef().updateChildren(values);
-                            i++;
-                        }
-                    }
-                    listener.onMethodDone();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.debug(TAG + "onCancelled Inbox buttons " + databaseError);
-                    listener.onMethodDone();
                 }
             });
         }

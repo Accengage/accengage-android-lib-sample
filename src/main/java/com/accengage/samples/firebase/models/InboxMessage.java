@@ -96,6 +96,7 @@ public class InboxMessage {
         result.put("uid", uid);
         result.put("label", label);
         result.put("buttonCount", buttonCount);
+        result.put("buttons", buttons);
         return result;
     }
 
