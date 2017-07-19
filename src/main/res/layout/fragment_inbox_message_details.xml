@@ -116,6 +116,17 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/inbox_buttons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true">
+
+        </LinearLayout>
+
     </RelativeLayout>
 
 </FrameLayout>

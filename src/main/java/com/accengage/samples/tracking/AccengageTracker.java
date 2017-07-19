@@ -3,7 +3,7 @@ package com.accengage.samples.tracking;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.ad4screen.sdk.Acc;
+import com.ad4screen.sdk.A4S;
 import com.ad4screen.sdk.analytics.Cart;
 import com.ad4screen.sdk.analytics.Lead;
 import com.ad4screen.sdk.analytics.Purchase;
@@ -18,35 +18,40 @@ public class AccengageTracker implements Tracker {
     }
 
     public void trackEvent(long id, String value) {
-        Acc.get(mContext).trackEvent(id, value);
+        A4S.get(mContext).trackEvent(id, value);
     }
 
     public void trackLead(Lead lead) {
-        Acc.get(mContext).trackLead(lead);
+        A4S.get(mContext).trackLead(lead);
     }
 
     public void trackCart(Cart cart) {
-        Acc.get(mContext).trackAddToCart(cart);
+        A4S.get(mContext).trackAddToCart(cart);
     }
 
     public void trackPurchase(Purchase purchase) {
-        Acc.get(mContext).trackPurchase(purchase);
+        A4S.get(mContext).trackPurchase(purchase);
     }
 
     public void updateDeviceInfo(String key, String value) {
         Bundle udis = new Bundle();
         udis.putString(key, value);
-        Acc.get(mContext).updateDeviceInfo(udis);
+        A4S.get(mContext).updateDeviceInfo(udis);
     }
 
     @Override
     public void trackMessageDisplay(String messageId) {
-        //Acc.get(mContext).trackInboxDisplay(messageId); // TODO make public in Acc.java
+        //A4S.get(mContext).trackInboxDisplay(messageId); // TODO make public in Acc.java
     }
 
     @Override
     public void trackMessageClick(String messageId) {
-        //Acc.get(mContext).trackInboxClick(messageId); // TODO make public in Acc.java
+        //A4S.get(mContext).trackInboxClick(messageId); // TODO make public in Acc.java
+    }
+
+    @Override
+    public void trackMessageButtonClick(String messageId, String buttonId, String title) {
+        //A4S.get(mContext).trackInboxButtonClick(messageId, buttonId); // TODO make public in Acc.java
     }
 
 }

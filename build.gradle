@@ -4,18 +4,28 @@ apply plugin: 'maven-publish'
 ext.rxAndroidVersion = "2.0.1"
 ext.rxJavaVersion = "2.1.0"         // for explicit dependency needed for rxAndroid
 
-ext.firebaseVersion="11.0.0"
-ext.firebaseUi="2.0.0"              // use firebase 11.0.0
+ext.firebaseVersion="10.2.6"
+ext.firebaseUi="1.2.0"
 
-ext.supportVersion="26.0.0-beta2"
-ext.a4sSdkVersionName="4.0.0"
+ext.supportVersion="25.1.1"
+ext.a4sSdkVersionName="3.6.0"
 
 ext.samplesVersionCode=03
 ext.samplesVersionName="0.3"
 
+configurations {
+    devDebugCompile
+    devReleaseCompile
+    preprodDebugCompile
+    preprodReleaseCompile
+    prodDebugCompile
+    prodReleaseCompile
+}
+
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    publishNonDefault true
 
     defaultConfig {
         minSdkVersion 16
@@ -81,10 +91,16 @@ dependencies {
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
-    //debugCompile group: 'com.ad4screen.sdk', name: 'A4SSDK', version: "SNAPSHOT-$a4sSdkVersionName", changing: true
-    //releaseCompile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
+    // **************************** SDK ***************************************
+    //compile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
 
-    api project(':A4SSDK-src')
+    // A4SSDK-src dependencies
+    devReleaseCompile project(path: ':A4SSDK-src', configuration: 'devRelease')
+    devDebugCompile project(path: ':A4SSDK-src', configuration: 'devDebug')
+    preprodReleaseCompile project(path: ':A4SSDK-src', configuration: 'preprodRelease')
+    preprodDebugCompile project(path: ':A4SSDK-src', configuration: 'preprodDebug')
+    prodReleaseCompile project(path: ':A4SSDK-src', configuration: 'prodRelease')
+    prodDebugCompile project(path: ':A4SSDK-src', configuration: 'prodDebug')
 }
 
 publishing.repositories {
@@ -103,15 +119,7 @@ publishing.publications {
         groupId 'com.accengage.samples'
         artifactId 'A4SSamples'
         version 'SNAPSHOT-'+samplesVersionName
-        artifact 'build/outputs/aar/A4SSamples-debug.aar'
-        artifact androidSourcesJar
-        artifact androidJavadocsJar
-    }
-    prod(MavenPublication) {
-        groupId 'com.accengage.samples'
-        artifactId 'A4SSamples'
-        version samplesVersionName
-        artifact 'build/outputs/aar/A4SSamples-release.aar'
+        artifact 'build/outputs/aar/A4SSamples-prod-debug.aar'
         artifact androidSourcesJar
         artifact androidJavadocsJar
 
@@ -135,6 +143,108 @@ publishing.publications {
             appCompatV7Node.appendNode('version', supportVersion)
             appCompatV7Node.appendNode('scope', 'compile')
             appCompatV7Node.appendNode('type', 'aar')
+            def supportDesign = dependenciesNode.appendNode('dependency')
+            supportDesign.appendNode('groupId', 'com.android.support')
+            supportDesign.appendNode('artifactId', 'design')
+            supportDesign.appendNode('version', supportVersion)
+            supportDesign.appendNode('scope', 'compile')
+            supportDesign.appendNode('type', 'aar')
+            def firebaseAuth = dependenciesNode.appendNode('dependency')
+            firebaseAuth.appendNode('groupId', 'com.google.firebase')
+            firebaseAuth.appendNode('artifactId', 'firebase-auth')
+            firebaseAuth.appendNode('version', firebaseVersion)
+            firebaseAuth.appendNode('scope', 'compile')
+            firebaseAuth.appendNode('type', 'aar')
+            def firebaseAnalytics = dependenciesNode.appendNode('dependency')
+            firebaseAnalytics.appendNode('groupId', 'com.google.firebase')
+            firebaseAnalytics.appendNode('artifactId', 'firebase-analytics-impl')
+            firebaseAnalytics.appendNode('version', firebaseVersion)
+            firebaseAnalytics.appendNode('scope', 'compile')
+            firebaseAnalytics.appendNode('type', 'aar')
+            def firebaseDB = dependenciesNode.appendNode('dependency')
+            firebaseDB.appendNode('groupId', 'com.google.firebase')
+            firebaseDB.appendNode('artifactId', 'firebase-database')
+            firebaseDB.appendNode('version', firebaseVersion)
+            firebaseDB.appendNode('scope', 'compile')
+            firebaseDB.appendNode('type', 'aar')
+            def firebaseUiAuth = dependenciesNode.appendNode('dependency')
+            firebaseUiAuth.appendNode('groupId', 'com.firebaseui')
+            firebaseUiAuth.appendNode('artifactId', 'firebase-ui-auth')
+            firebaseUiAuth.appendNode('version', firebaseUi)
+            firebaseUiAuth.appendNode('scope', 'compile')
+            firebaseUiAuth.appendNode('type', 'aar')
+            def firebaseUiDB = dependenciesNode.appendNode('dependency')
+            firebaseUiDB.appendNode('groupId', 'com.firebaseui')
+            firebaseUiDB.appendNode('artifactId', 'firebase-ui-database')
+            firebaseUiDB.appendNode('version', firebaseUi)
+            firebaseUiDB.appendNode('scope', 'compile')
+            firebaseUiDB.appendNode('type', 'aar')
+        }
+    }
+    prod(MavenPublication) {
+        groupId 'com.accengage.samples'
+        artifactId 'A4SSamples'
+        version samplesVersionName
+        artifact 'build/outputs/aar/A4SSamples-prod-release.aar'
+        artifact androidSourcesJar
+        artifact androidJavadocsJar
+
+        pom.withXml {
+            def dependenciesNode = asNode().appendNode('dependencies')
+            def sdkDependencyNode = dependenciesNode.appendNode('dependency')
+            sdkDependencyNode.appendNode('groupId', 'com.ad4screen.sdk')
+            sdkDependencyNode.appendNode('artifactId', 'A4SSDK')
+            sdkDependencyNode.appendNode('version', a4sSdkVersionName)
+            sdkDependencyNode.appendNode('scope', 'compile')
+            sdkDependencyNode.appendNode('type', 'aar')
+            def supportV4Node = dependenciesNode.appendNode('dependency')
+            supportV4Node.appendNode('groupId', 'com.android.support')
+            supportV4Node.appendNode('artifactId', 'support-v4')
+            supportV4Node.appendNode('version', supportVersion)
+            supportV4Node.appendNode('scope', 'compile')
+            supportV4Node.appendNode('type', 'aar')
+            def appCompatV7Node = dependenciesNode.appendNode('dependency')
+            appCompatV7Node.appendNode('groupId', 'com.android.support')
+            appCompatV7Node.appendNode('artifactId', 'appcompat-v7')
+            appCompatV7Node.appendNode('version', supportVersion)
+            appCompatV7Node.appendNode('scope', 'compile')
+            appCompatV7Node.appendNode('type', 'aar')
+            def supportDesign = dependenciesNode.appendNode('dependency')
+            supportDesign.appendNode('groupId', 'com.android.support')
+            supportDesign.appendNode('artifactId', 'design')
+            supportDesign.appendNode('version', supportVersion)
+            supportDesign.appendNode('scope', 'compile')
+            supportDesign.appendNode('type', 'aar')
+            def firebaseAuth = dependenciesNode.appendNode('dependency')
+            firebaseAuth.appendNode('groupId', 'com.google.firebase')
+            firebaseAuth.appendNode('artifactId', 'firebase-auth')
+            firebaseAuth.appendNode('version', firebaseVersion)
+            firebaseAuth.appendNode('scope', 'compile')
+            firebaseAuth.appendNode('type', 'aar')
+            def firebaseAnalytics = dependenciesNode.appendNode('dependency')
+            firebaseAnalytics.appendNode('groupId', 'com.google.firebase')
+            firebaseAnalytics.appendNode('artifactId', 'firebase-analytics-impl')
+            firebaseAnalytics.appendNode('version', firebaseVersion)
+            firebaseAnalytics.appendNode('scope', 'compile')
+            firebaseAnalytics.appendNode('type', 'aar')
+            def firebaseDB = dependenciesNode.appendNode('dependency')
+            firebaseDB.appendNode('groupId', 'com.google.firebase')
+            firebaseDB.appendNode('artifactId', 'firebase-database')
+            firebaseDB.appendNode('version', firebaseVersion)
+            firebaseDB.appendNode('scope', 'compile')
+            firebaseDB.appendNode('type', 'aar')
+            def firebaseUiAuth = dependenciesNode.appendNode('dependency')
+            firebaseUiAuth.appendNode('groupId', 'com.firebaseui')
+            firebaseUiAuth.appendNode('artifactId', 'firebase-ui-auth')
+            firebaseUiAuth.appendNode('version', firebaseUi)
+            firebaseUiAuth.appendNode('scope', 'compile')
+            firebaseUiAuth.appendNode('type', 'aar')
+            def firebaseUiDB = dependenciesNode.appendNode('dependency')
+            firebaseUiDB.appendNode('groupId', 'com.firebaseui')
+            firebaseUiDB.appendNode('artifactId', 'firebase-ui-database')
+            firebaseUiDB.appendNode('version', firebaseUi)
+            firebaseUiDB.appendNode('scope', 'compile')
+            firebaseUiDB.appendNode('type', 'aar')
         }
     }
 }

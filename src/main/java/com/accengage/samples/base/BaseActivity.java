@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.accengage.samples.R;
-import com.ad4screen.sdk.Acc;
+import com.ad4screen.sdk.A4S;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -21,18 +21,18 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Acc.get(this).startActivity(this);
+        A4S.get(this).startActivity(this);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Acc.get(this).setIntent(intent);
+        A4S.get(this).setIntent(intent);
     }
 
     @Override
     protected void onPause() {
-        Acc.get(this).stopActivity(this);
+        A4S.get(this).stopActivity(this);
         super.onPause();
     }
 

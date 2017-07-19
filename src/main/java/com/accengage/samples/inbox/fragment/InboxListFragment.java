@@ -45,7 +45,7 @@ public abstract class InboxListFragment extends AccengageFragment {
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         mInboxManager = InboxMessagesManager.get(getActivity());
 
-        mRecycler = fragmentView.findViewById(R.id.messages_list);
+        mRecycler = (RecyclerView) fragmentView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
     }
 

@@ -29,7 +29,7 @@ import com.accengage.samples.base.BaseActivity;
 import com.accengage.samples.firebase.Constants;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.fragment.InboxMessagesFragment;
-import com.ad4screen.sdk.Acc;
+import com.ad4screen.sdk.A4S;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 import com.bumptech.glide.Glide;
@@ -79,17 +79,17 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             return;
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mNavigationMenu = navigationView.getMenu();
 
         View headerView = navigationView.getHeaderView(0);
-        final ImageView accountImageView = headerView.findViewById(R.id.iv_user_icon);
+        final ImageView accountImageView = (ImageView) headerView.findViewById(R.id.iv_user_icon);
         if (mCurrentUser.getPhotoUrl() != null) {
             Glide.with(this).load(mCurrentUser.getPhotoUrl()).asBitmap().into(new BitmapImageViewTarget(accountImageView) {
                 @Override
@@ -109,9 +109,9 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                 return;
             }
         });
-        TextView nameView = headerView.findViewById(R.id.tv_user_name);
+        TextView nameView = (TextView) headerView.findViewById(R.id.tv_user_name);
         nameView.setText(mCurrentUser.getDisplayName());
-        TextView emailView = headerView.findViewById(R.id.tv_user_email);
+        TextView emailView = (TextView) headerView.findViewById(R.id.tv_user_email);
         emailView.setText(mCurrentUser.getEmail());
 
         InboxMessagesManager.get(getApplicationContext()).subscribeForMessages(mMessageHandler);
@@ -128,7 +128,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -186,7 +186,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         }
         replaceFragment(InboxMessagesFragment.class);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -224,7 +224,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
 
@@ -234,7 +234,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         if (fragment instanceof AccengageFragment) {
             String viewName =  fragment.getViewName(this);
             if (viewName != null) {
-                Acc.get(this).setView(viewName);
+                A4S.get(this).setView(viewName);
                 setTitle(viewName);
                 //checkMenuItemWithName(viewName);
                 //mCurrentView = viewName;
@@ -281,8 +281,8 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         private int mReceivedMessageCount = 0;
         private int mHandledMessageCount = 0;
 
-        private abstract class CategoryEventListener {
-            abstract void onCategoryDone();
+        private abstract class MethodEventListener {
+            abstract void onMethodDone();
         }
 
         @Override
@@ -308,28 +308,29 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
         }
 
         private void writeMessage(final InboxMessage message) {
+            Log.debug(TAG + "Write message " + message.id);
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
             dbRef.child(Constants.USER_INBOX_MESSAGES).child(message.uid).child(Constants.Inbox.Messages.Box.INBOX).
                     child(message.id).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onDataChange(final DataSnapshot dataSnapshot) {
                     InboxMessage msgFromDB = dataSnapshot.getValue(InboxMessage.class);
                     if (msgFromDB == null) {
                         Log.debug(TAG + "Add new inbox message " + message.id);
                         dataSnapshot.getRef().setValue(message);
-                        writeCategory(message, new CategoryEventListener() {
+                        writeCategory(message, new MethodEventListener() {
                             @Override
-                            public void onCategoryDone() {
+                            public void onMethodDone() {
                                 mHandledMessageCount++;
-                                readCategories();
+                                checkExpiredMessagesAndReadCategories();
                             }
                         });
                     } else {
                         Log.debug(TAG + "Inbox message " + msgFromDB.id + " is already existed in the DB");
                         // check if instances are equal
                         if (!message.equals(msgFromDB)) {
-                            Log.debug("Update Inbox message " + msgFromDB.id);
+                            Log.debug(TAG + "Update Inbox message " + msgFromDB.id);
                             Map<String, Object> msgValues = message.toMap();
                             dataSnapshot.getRef().updateChildren(msgValues);
                         }
@@ -345,7 +346,7 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
             });
         }
 
-        private void writeCategory(final InboxMessage inboxMessage, final CategoryEventListener listener) {
+        private void writeCategory(final InboxMessage inboxMessage, final MethodEventListener listener) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
             if (!TextUtils.isEmpty(inboxMessage.category)) {
@@ -361,17 +362,17 @@ public class InboxNavActivity extends BaseActivity implements NavigationView.OnN
                         } else {
                             Log.debug(TAG + "A message " + inboxMessage.id + " is already existed in category " + inboxMessage.category);
                         }
-                        listener.onCategoryDone();
+                        listener.onMethodDone();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.debug(TAG + "onCancelled Inbox category " + databaseError);
-                        listener.onCategoryDone();
+                        listener.onMethodDone();
                     }
                 });
             } else {
-                listener.onCategoryDone();
+                listener.onMethodDone();
             }
         }
 

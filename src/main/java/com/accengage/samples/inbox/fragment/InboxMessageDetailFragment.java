@@ -1,6 +1,7 @@
 package com.accengage.samples.inbox.fragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,17 +12,20 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.accengage.samples.R;
 import com.accengage.samples.base.AccengageFragment;
 import com.accengage.samples.firebase.Constants;
+import com.accengage.samples.firebase.models.InboxButton;
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.accengage.samples.inbox.InboxNavActivity;
 import com.accengage.samples.inbox.InboxUtils;
 import com.accengage.samples.inbox.InboxViewHolder;
-import com.ad4screen.sdk.Acc;
+import com.ad4screen.sdk.A4S;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 
@@ -38,6 +42,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     private WebView mWebView;
     private ImageView mIconView;
     private TextView mSentTime;
+    private LinearLayout mButtonsLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,12 +56,13 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     public void onCreatingView(View fragmentView) {
         super.onCreatingView(fragmentView);
 
-        mSender = fragmentView.findViewById(R.id.inbox_msg_sender);
-        mTitle = fragmentView.findViewById(R.id.inbox_msg_title);
-        mBody = fragmentView.findViewById(R.id.inbox_msg_body);
-        mWebView = fragmentView.findViewById(R.id.inbox_msg_webview);
-        mIconView = fragmentView.findViewById(R.id.inbox_msg_sender_photo);
-        mSentTime = fragmentView.findViewById(R.id.inbox_msg_sent_time);
+        mSender = (TextView) fragmentView.findViewById(R.id.inbox_msg_sender);
+        mTitle = (TextView) fragmentView.findViewById(R.id.inbox_msg_title);
+        mBody = (TextView) fragmentView.findViewById(R.id.inbox_msg_body);
+        mWebView = (WebView) fragmentView.findViewById(R.id.inbox_msg_webview);
+        mIconView = (ImageView) fragmentView.findViewById(R.id.inbox_msg_sender_photo);
+        mSentTime = (TextView) fragmentView.findViewById(R.id.inbox_msg_sent_time);
+        mButtonsLayout = (LinearLayout) fragmentView.findViewById(R.id.inbox_buttons_layout);
 
         mSender.setText(mMessage.sender);
         mSentTime.setText(mMessage.getFormatedDateTime());
@@ -67,14 +73,14 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         }
 
         Message accMessage = mMessage.getAccMessage();
-        accMessage.display(getContext(), new Acc.Callback<Message>() {
+        accMessage.display(getContext(), new A4S.Callback<Message>() {
             @Override
             public void onResult(Message result) {
                 Log.debug(TAG + "onResult display OK");
 
                 if (mMessage.contentType.equals(Message.MessageContentType.Web.name())) {
                     Log.debug(TAG + "message with a web content");
-                    if (mMessage.body != null) {
+                    if (!TextUtils.isEmpty(mMessage.body)) {
                         Log.debug(TAG + "message with a web body is not null " + mMessage.body);
                         mWebView.setVisibility(View.VISIBLE);
                         mWebView.setWebViewClient(new WebViewClient());
@@ -85,12 +91,49 @@ public class InboxMessageDetailFragment extends AccengageFragment {
                         }
                         mWebView.loadUrl(mMessage.body);
                         mBody.setVisibility(View.GONE);
+                    } else {
+                        if (!TextUtils.isEmpty(mMessage.text)) {
+                            mBody.setText(mMessage.text);
+                            mBody.setVisibility(View.VISIBLE);
+                        }
                     }
                 } else {
                     Log.debug(TAG + "message with an other content: " + mMessage.contentType);
                     mWebView.setVisibility(View.GONE);
                     mBody.setText(mMessage.body);
                     mBody.setVisibility(View.VISIBLE);
+                }
+
+
+                if (mMessage.buttonCount > 0) {
+                    mButtonsLayout.setVisibility(View.VISIBLE);
+                    for (int i = 0; i < mMessage.buttonCount; i++) {
+                        Button button = new Button(getActivity().getApplicationContext());
+                        button.setText(mMessage.buttons.get(i).title);
+                        button.setTextColor(Color.WHITE);
+                        button.setBackgroundColor(Color.parseColor("#007AFF"));
+                        button.setPadding(10, 2, 10, 2);
+                        button.setTag(i);
+
+                        button.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                int index = (Integer) v.getTag();
+                                Message.Button accInboxButton = mMessage.buttons.get(index).getAccButton();
+                                InboxButton fabInboxButton = mMessage.buttons.get(index);
+                                getTracker().trackMessageButtonClick(mMessage.id, fabInboxButton.id, fabInboxButton.title); // Implemented only for Firebase
+                                accInboxButton.hasBeenClickedByUser(getContext()); // TODO Tracking should be done in AccengageTracker, this line must be removed
+
+                                accInboxButton.click(getContext());
+                            }
+                        });
+
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.5f);
+                        params.leftMargin = 20;
+                        params.rightMargin = 20;
+                        mButtonsLayout.addView(button, params);
+                    }
                 }
             }
 

@@ -13,7 +13,7 @@ public class InboxCategory {
     public int messageCount;
 
     public InboxCategory() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
+        // Default constructor required for calls to DataSnapshot.getValue(InboxCategory.class)
     }
 
     public InboxCategory(String name, int messageCount) {

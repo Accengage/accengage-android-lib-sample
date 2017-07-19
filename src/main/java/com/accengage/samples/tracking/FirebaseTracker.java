@@ -17,6 +17,7 @@ public class FirebaseTracker implements Tracker {
     public static class Event {
         public static final String DISPLAY_INBOX_MSG = "acc_display_inbox_msg";
         public static final String CLICK_INBOX_MSG = "acc_click_inbox_msg";
+        public static final String CLICK_INBOX_BTN = "acc_click_inbox_btn";
     }
 
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -101,6 +102,15 @@ public class FirebaseTracker implements Tracker {
         Bundle bundle = new Bundle();
         bundle.putString("msg_id", messageId);
         mFirebaseAnalytics.logEvent(Event.CLICK_INBOX_MSG, bundle);
+    }
+
+    @Override
+    public void trackMessageButtonClick(String messageId, String buttonId, String title) {
+        Bundle bundle = new Bundle();
+        bundle.putString("msg_id", messageId);
+        bundle.putString("btn_id", buttonId);
+        bundle.putString("btn_title", title);
+        mFirebaseAnalytics.logEvent(Event.CLICK_INBOX_BTN, bundle);
     }
 
 }
