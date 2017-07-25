@@ -8,23 +8,14 @@ ext.firebaseVersion="10.2.6"
 ext.firebaseUi="1.2.0"
 
 ext.supportVersion="25.1.1"
-ext.a4sSdkVersionName="3.6.0"
+ext.a4sSdkVersionName="3.6.1"
 
 ext.samplesVersionCode=03
 ext.samplesVersionName="0.3"
 
-configurations {
-    devDebugCompile
-    devReleaseCompile
-    preprodDebugCompile
-    preprodReleaseCompile
-    prodDebugCompile
-    prodReleaseCompile
-}
-
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
     publishNonDefault true
 
     defaultConfig {
@@ -91,12 +82,7 @@ dependencies {
     //compile 'com.ad4screen.sdk:A4SSDK:'+a4sSdkVersionName
 
     // A4SSDK-src dependencies
-    devReleaseCompile project(path: ':A4SSDK-src', configuration: 'devRelease')
-    devDebugCompile project(path: ':A4SSDK-src', configuration: 'devDebug')
-    preprodReleaseCompile project(path: ':A4SSDK-src', configuration: 'preprodRelease')
-    preprodDebugCompile project(path: ':A4SSDK-src', configuration: 'preprodDebug')
-    prodReleaseCompile project(path: ':A4SSDK-src', configuration: 'prodRelease')
-    prodDebugCompile project(path: ':A4SSDK-src', configuration: 'prodDebug')
+    api project(':A4SSDK-src')
 }
 
 publishing.repositories {
