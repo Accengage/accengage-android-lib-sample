@@ -7,7 +7,7 @@ ext.rxJavaVersion = "2.1.0"         // for explicit dependency needed for rxAndr
 ext.firebaseVersion="10.2.6"
 ext.firebaseUi="1.2.0"
 
-ext.supportVersion="25.1.1"
+ext.supportVersion="26.0.0"
 ext.a4sSdkVersionName="3.6.1"
 
 ext.samplesVersionCode=03
