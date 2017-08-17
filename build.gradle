@@ -10,8 +10,8 @@ ext.firebaseUi="2.2.0"
 ext.supportVersion="26.0.0"
 ext.a4sSdkVersionName="3.6.1"
 
-ext.samplesVersionCode=03
-ext.samplesVersionName="0.3"
+ext.samplesVersionCode=031
+ext.samplesVersionName="0.3.1"
 
 android {
     compileSdkVersion 26
