@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.accengage.samples.firebase.models.InboxMessage;
 import com.ad4screen.sdk.A4S;
+import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Inbox;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
@@ -97,7 +98,7 @@ public class InboxMessagesManager {
         public void subscribe(ObservableEmitter<Message> subscriber) throws Exception {
 
             mSubscriber = subscriber;
-            A4S.get(mContext).getInbox(new A4S.Callback<Inbox>() {
+            Acc.get(mContext).getInbox(new Acc.Callback<Inbox>() {
                 @Override
                 public void onResult(Inbox result) {
 
@@ -113,7 +114,7 @@ public class InboxMessagesManager {
 
                             Log.debug("There is(are) " + mCounter + " Inbox message(s)");
                             for (int i = 0; i < mInbox.countMessages(); i++) {
-                                mInbox.getMessage(i, new A4S.MessageCallback() {
+                                mInbox.getMessage(i, new Acc.MessageCallback() {
 
                                     @Override
                                     public void onResult(com.ad4screen.sdk.Message msg, final int index) {

@@ -26,6 +26,7 @@ import com.accengage.samples.inbox.InboxNavActivity;
 import com.accengage.samples.inbox.InboxUtils;
 import com.accengage.samples.inbox.InboxViewHolder;
 import com.ad4screen.sdk.A4S;
+import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 
@@ -56,13 +57,13 @@ public class InboxMessageDetailFragment extends AccengageFragment {
     public void onCreatingView(View fragmentView) {
         super.onCreatingView(fragmentView);
 
-        mSender = (TextView) fragmentView.findViewById(R.id.inbox_msg_sender);
-        mTitle = (TextView) fragmentView.findViewById(R.id.inbox_msg_title);
-        mBody = (TextView) fragmentView.findViewById(R.id.inbox_msg_body);
-        mWebView = (WebView) fragmentView.findViewById(R.id.inbox_msg_webview);
-        mIconView = (ImageView) fragmentView.findViewById(R.id.inbox_msg_sender_photo);
-        mSentTime = (TextView) fragmentView.findViewById(R.id.inbox_msg_sent_time);
-        mButtonsLayout = (LinearLayout) fragmentView.findViewById(R.id.inbox_buttons_layout);
+        mSender = fragmentView.findViewById(R.id.inbox_msg_sender);
+        mTitle = fragmentView.findViewById(R.id.inbox_msg_title);
+        mBody = fragmentView.findViewById(R.id.inbox_msg_body);
+        mWebView = fragmentView.findViewById(R.id.inbox_msg_webview);
+        mIconView = fragmentView.findViewById(R.id.inbox_msg_sender_photo);
+        mSentTime = fragmentView.findViewById(R.id.inbox_msg_sent_time);
+        mButtonsLayout = fragmentView.findViewById(R.id.inbox_buttons_layout);
 
         mSender.setText(mMessage.sender);
         mSentTime.setText(mMessage.getFormatedDateTime());
@@ -73,7 +74,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         }
 
         Message accMessage = mMessage.getAccMessage();
-        accMessage.display(getContext(), new A4S.Callback<Message>() {
+        accMessage.display(getContext(), new Acc.Callback<Message>() {
             @Override
             public void onResult(Message result) {
                 Log.debug(TAG + "onResult display OK");

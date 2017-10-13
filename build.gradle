@@ -4,10 +4,10 @@ apply plugin: 'maven-publish'
 ext.rxAndroidVersion = "2.0.1"
 ext.rxJavaVersion = "2.1.0"         // for explicit dependency needed for rxAndroid
 
-ext.firebaseVersion="11.0.4"
-ext.firebaseUi="2.2.0"
+ext.firebaseVersion="11.4.2"
+ext.firebaseUi="3.0.0"
 
-ext.supportVersion="26.0.0"
+ext.supportVersion="26.1.0"
 ext.a4sSdkVersionName="3.6.1"
 
 ext.samplesVersionCode=031
@@ -15,7 +15,7 @@ ext.samplesVersionName="0.3.1"
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.0'
+    buildToolsVersion '26.0.2'
     publishNonDefault true
 
     defaultConfig {

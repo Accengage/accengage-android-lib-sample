@@ -33,11 +33,11 @@ public class InboxViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         itemView.setTag(this);
-        mSender = (TextView) itemView.findViewById(R.id.inbox_msg_sender);
-        mTitle = (TextView) itemView.findViewById(R.id.inbox_msg_title);
-        mShortText = (TextView) itemView.findViewById(R.id.inbox_msg_short_text);
-        mIconView = (ImageView) itemView.findViewById(R.id.inbox_msg_sender_photo);
-        mSentTime = (TextView) itemView.findViewById(R.id.inbox_msg_sent_time);
+        mSender = itemView.findViewById(R.id.inbox_msg_sender);
+        mTitle = itemView.findViewById(R.id.inbox_msg_title);
+        mShortText = itemView.findViewById(R.id.inbox_msg_short_text);
+        mIconView = itemView.findViewById(R.id.inbox_msg_sender_photo);
+        mSentTime = itemView.findViewById(R.id.inbox_msg_sent_time);
     }
 
     public void bindToMessage(Context context, InboxMessage inboxMessage) {
