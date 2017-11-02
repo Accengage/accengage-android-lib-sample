@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.accengage.samples.R;
 import com.accengage.samples.base.AccengageFragment;
@@ -15,6 +17,7 @@ import com.accengage.samples.inbox.InboxViewHolder;
 import com.accengage.samples.tracking.Tracker;
 import com.ad4screen.sdk.Message;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -45,7 +48,7 @@ public abstract class InboxListFragment extends AccengageFragment {
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         mInboxManager = InboxMessagesManager.get(getActivity());
 
-        mRecycler = (RecyclerView) fragmentView.findViewById(R.id.messages_list);
+        mRecycler = fragmentView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
     }
 
@@ -61,10 +64,24 @@ public abstract class InboxListFragment extends AccengageFragment {
 
         Query postsQuery = getQuery(mDatabase);
 
-        mAdapter = new FirebaseRecyclerAdapter<InboxMessage, InboxViewHolder>(InboxMessage.class, R.layout.item_inbox_message, InboxViewHolder.class, postsQuery) {
+        FirebaseRecyclerOptions<InboxMessage> options =
+                new FirebaseRecyclerOptions.Builder<InboxMessage>()
+                .setQuery(postsQuery, InboxMessage.class)
+                .setLifecycleOwner(this)
+                .build();
+        mAdapter = new FirebaseRecyclerAdapter<InboxMessage, InboxViewHolder>(options) {
 
             @Override
-            protected void populateViewHolder(InboxViewHolder viewHolder, InboxMessage message, int position) {
+            public InboxViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return new InboxViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_inbox_message, parent, false));
+            }
+
+            @Override
+            protected void onBindViewHolder(InboxViewHolder holder, int position, InboxMessage message) {
+                populateViewHolder(holder, message);
+            }
+
+            private void populateViewHolder(InboxViewHolder viewHolder, InboxMessage message) {
                 Log.d(TAG, "populate message " + message.id);
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -119,14 +136,6 @@ public abstract class InboxListFragment extends AccengageFragment {
             }
         };
         mRecycler.setAdapter(mAdapter);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mAdapter != null) {
-            mAdapter.cleanup();
-        }
     }
 
     public abstract Query getQuery(DatabaseReference databaseReference);
