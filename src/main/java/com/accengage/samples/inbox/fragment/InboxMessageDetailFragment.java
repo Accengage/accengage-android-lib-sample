@@ -26,7 +26,6 @@ import com.accengage.samples.inbox.InboxNavActivity;
 import com.accengage.samples.inbox.InboxUtils;
 import com.accengage.samples.inbox.InboxViewHolder;
 import com.ad4screen.sdk.A4S;
-import com.ad4screen.sdk.Acc;
 import com.ad4screen.sdk.Log;
 import com.ad4screen.sdk.Message;
 
@@ -74,7 +73,7 @@ public class InboxMessageDetailFragment extends AccengageFragment {
         }
 
         Message accMessage = mMessage.getAccMessage();
-        accMessage.display(getContext(), new Acc.Callback<Message>() {
+        accMessage.display(getContext(), new A4S.Callback<Message>() {
             @Override
             public void onResult(Message result) {
                 Log.debug(TAG + "onResult display OK");
