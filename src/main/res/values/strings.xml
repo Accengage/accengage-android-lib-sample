@@ -27,7 +27,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Firebase Auth -->
-    <string name="sign_in">Sing In</string>
+    <string name="sign_in">Sign In</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="unknown_sign_in_response">Unknown response from AuthUI sign-in</string>
