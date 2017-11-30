@@ -5,9 +5,9 @@ ext.rxAndroidVersion = "2.0.1"
 ext.rxJavaVersion = "2.1.0"         // for explicit dependency needed for rxAndroid
 
 ext.firebaseVersion="11.4.2"
-ext.firebaseUi="3.0.0"
+ext.firebaseUi="3.1.0"
 
-ext.supportVersion="27.0.0"
+ext.supportVersion="27.0.1"
 ext.a4sSdkVersionName="3.6.4"
 
 ext.samplesVersionCode=032
@@ -15,7 +15,7 @@ ext.samplesVersionName="0.3.2"
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.0'
+    buildToolsVersion '27.0.1'
     publishNonDefault true
 
     defaultConfig {
