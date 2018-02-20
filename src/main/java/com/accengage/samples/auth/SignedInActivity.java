@@ -23,7 +23,6 @@ import com.accengage.samples.tracking.Trackers;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ui.ExtraConstants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -37,6 +36,7 @@ import java.util.Iterator;
 
 public class SignedInActivity extends BaseActivity {
 
+    private static final String EXTRA_IDP_RESPONSE = "extra_idp_response";
     private static final String TAG = "SignedInActivity";
 
     private View mRootView;
@@ -249,7 +249,7 @@ public class SignedInActivity extends BaseActivity {
 
     public static Intent createIntent(Context context, IdpResponse idpResponse) {
         Intent in = new Intent();
-        in.putExtra(ExtraConstants.EXTRA_IDP_RESPONSE, idpResponse);
+        in.putExtra(EXTRA_IDP_RESPONSE, idpResponse);
         in.setClass(context, SignedInActivity.class);
         return in;
     }
