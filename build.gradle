@@ -4,11 +4,13 @@ apply plugin: 'maven-publish'
 ext.rxAndroidVersion = "2.0.1"
 ext.rxJavaVersion = "2.1.0"         // for explicit dependency needed for rxAndroid
 
-ext.firebaseVersion="11.8.0"
+ext.firebaseDatabase="16.0.1"
+ext.firebaseAuthentication="16.0.2"
+ext.firebaseAnalyticsImpl="16.1.1"
 ext.firebaseUi="3.2.1"
 
 ext.supportVersion="27.0.2"
-ext.a4sSdkVersionName="3.7.0"
+ext.a4sSdkVersionName="3.7.2"
 
 ext.samplesVersionCode=034
 ext.samplesVersionName="0.3.4"
@@ -71,9 +73,9 @@ dependencies {
     // explicitly depend on RxJava's latest version for bug fixes and new features.
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
-    implementation "com.google.firebase:firebase-auth:$firebaseVersion"
-    implementation "com.google.firebase:firebase-analytics-impl:$firebaseVersion"
-    implementation "com.google.firebase:firebase-database:$firebaseVersion"
+    implementation "com.google.firebase:firebase-auth:$firebaseAuthentication"
+    implementation "com.google.firebase:firebase-analytics-impl:$firebaseAnalyticsImpl"
+    implementation "com.google.firebase:firebase-database:$firebaseDatabase"
 
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUi"
     implementation "com.firebaseui:firebase-ui-database:$firebaseUi"
@@ -136,19 +138,19 @@ publishing.publications {
             def firebaseAuth = dependenciesNode.appendNode('dependency')
             firebaseAuth.appendNode('groupId', 'com.google.firebase')
             firebaseAuth.appendNode('artifactId', 'firebase-auth')
-            firebaseAuth.appendNode('version', firebaseVersion)
+            firebaseAuth.appendNode('version', firebaseAuthentication)
             firebaseAuth.appendNode('scope', 'compile')
             firebaseAuth.appendNode('type', 'aar')
             def firebaseAnalytics = dependenciesNode.appendNode('dependency')
             firebaseAnalytics.appendNode('groupId', 'com.google.firebase')
             firebaseAnalytics.appendNode('artifactId', 'firebase-analytics-impl')
-            firebaseAnalytics.appendNode('version', firebaseVersion)
+            firebaseAnalytics.appendNode('version', firebaseAnalyticsImpl)
             firebaseAnalytics.appendNode('scope', 'compile')
             firebaseAnalytics.appendNode('type', 'aar')
             def firebaseDB = dependenciesNode.appendNode('dependency')
             firebaseDB.appendNode('groupId', 'com.google.firebase')
             firebaseDB.appendNode('artifactId', 'firebase-database')
-            firebaseDB.appendNode('version', firebaseVersion)
+            firebaseDB.appendNode('version', firebaseDatabase)
             firebaseDB.appendNode('scope', 'compile')
             firebaseDB.appendNode('type', 'aar')
             def firebaseUiAuth = dependenciesNode.appendNode('dependency')
@@ -202,19 +204,19 @@ publishing.publications {
             def firebaseAuth = dependenciesNode.appendNode('dependency')
             firebaseAuth.appendNode('groupId', 'com.google.firebase')
             firebaseAuth.appendNode('artifactId', 'firebase-auth')
-            firebaseAuth.appendNode('version', firebaseVersion)
+            firebaseAuth.appendNode('version', firebaseAuthentication)
             firebaseAuth.appendNode('scope', 'compile')
             firebaseAuth.appendNode('type', 'aar')
             def firebaseAnalytics = dependenciesNode.appendNode('dependency')
             firebaseAnalytics.appendNode('groupId', 'com.google.firebase')
             firebaseAnalytics.appendNode('artifactId', 'firebase-analytics-impl')
-            firebaseAnalytics.appendNode('version', firebaseVersion)
+            firebaseAnalytics.appendNode('version', firebaseAnalyticsImpl)
             firebaseAnalytics.appendNode('scope', 'compile')
             firebaseAnalytics.appendNode('type', 'aar')
             def firebaseDB = dependenciesNode.appendNode('dependency')
             firebaseDB.appendNode('groupId', 'com.google.firebase')
             firebaseDB.appendNode('artifactId', 'firebase-database')
-            firebaseDB.appendNode('version', firebaseVersion)
+            firebaseDB.appendNode('version', firebaseDatabase)
             firebaseDB.appendNode('scope', 'compile')
             firebaseDB.appendNode('type', 'aar')
             def firebaseUiAuth = dependenciesNode.appendNode('dependency')
