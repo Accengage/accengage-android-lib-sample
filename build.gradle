@@ -10,14 +10,14 @@ ext.firebaseAnalyticsImpl="16.1.1"
 ext.firebaseUi="3.2.1"
 
 ext.supportVersion="27.0.2"
-ext.a4sSdkVersionName="3.7.2"
+ext.a4sSdkVersionName="3.8.2"
 
 ext.samplesVersionCode=034
 ext.samplesVersionName="0.3.4"
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
     publishNonDefault true
 
     defaultConfig {
