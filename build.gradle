@@ -4,25 +4,27 @@ apply plugin: 'maven-publish'
 ext.rxAndroidVersion = "2.0.1"
 ext.rxJavaVersion = "2.1.0"         // for explicit dependency needed for rxAndroid
 
-ext.firebaseDatabase="16.0.1"
-ext.firebaseAuthentication="16.0.2"
-ext.firebaseAnalyticsImpl="16.1.1"
-ext.firebaseUi="3.2.1"
+ext.firebaseDatabase="16.0.5"
+ext.firebaseAuthentication="16.1.0"
+ext.firebaseAnalyticsImpl="16.2.4"
+ext.firebaseUi="4.2.1"
+ext.firebaseCore="16.0.6"
+ext.firebaseIid="17.0.4"
 
-ext.supportVersion="27.0.2"
-ext.a4sSdkVersionName="3.8.2"
+ext.supportVersion="28.0.0"
+ext.a4sSdkVersionName="3.8.3"
 
 ext.samplesVersionCode=034
 ext.samplesVersionName="0.3.4"
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '28.0.2'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     publishNonDefault true
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode samplesVersionCode
         versionName samplesVersionName
     }
@@ -79,6 +81,8 @@ dependencies {
 
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUi"
     implementation "com.firebaseui:firebase-ui-database:$firebaseUi"
+    implementation "com.google.firebase:firebase-core:$firebaseCore"
+    implementation "com.google.firebase:firebase-iid:$firebaseIid"
 
     implementation 'com.github.bumptech.glide:glide:3.7.0'
 

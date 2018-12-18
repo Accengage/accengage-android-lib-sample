@@ -1,5 +1,6 @@
 package com.accengage.samples.auth;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import com.accengage.samples.tracking.Trackers;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ResultCodes;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -78,7 +78,7 @@ public class AuthActivity extends AppCompatActivity {
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
         // Successfully signed in
-        if (resultCode == ResultCodes.OK) {
+        if (resultCode == Activity.RESULT_OK) {
             Log.i(TAG, "sign-in token " + response.getIdpToken());
             if (mActivityToStart != null) {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -98,12 +98,12 @@ public class AuthActivity extends AppCompatActivity {
                 return;
             }
 
-            if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+            if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
                 showSnackbar(R.string.no_internet_connection);
                 return;
             }
 
-            if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+            if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                 showSnackbar(R.string.unknown_error);
                 return;
             }
