@@ -9,10 +9,10 @@ ext.firebaseAuthentication="16.1.0"
 ext.firebaseAnalyticsImpl="16.2.4"
 ext.firebaseUi="4.2.1"
 ext.firebaseCore="16.0.6"
-ext.firebaseIid="17.0.4"
+ext.firebaseIid="17.1.1"
 
 ext.supportVersion="28.0.0"
-ext.a4sSdkVersionName="3.8.3"
+ext.a4sSdkVersionName="3.8.5"
 
 ext.samplesVersionCode=035
 ext.samplesVersionName="0.3.5"
