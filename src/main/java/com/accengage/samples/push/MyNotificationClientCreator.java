@@ -7,8 +7,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
+import androidx.core.app.NotificationCompat;
 
 import com.accengage.samples.R;
 import com.accengage.samples.backstack.BackstackActivity;
