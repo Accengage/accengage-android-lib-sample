@@ -10,7 +10,7 @@ ext.firebaseAnalyticsImpl="16.2.4"
 ext.firebaseUi="4.3.2"
 ext.firebaseCore="16.0.6"
 
-ext.firebaseIid="17.0.4"
+ext.firebaseIid="17.1.1"
 ext.jetpackVersion="1.0.0"
 
 ext.supportVersion="28.0.0"
