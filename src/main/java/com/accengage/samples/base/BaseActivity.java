@@ -1,9 +1,9 @@
 package com.accengage.samples.base;
 
 import android.content.Intent;
-import androidx.annotation.LayoutRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import android.support.annotation.LayoutRes;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.accengage.samples.R;
 import com.ad4screen.sdk.A4S;
