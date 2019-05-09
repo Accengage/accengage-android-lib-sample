@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.accengage.samples.inbox.InboxNavActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/messages_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
