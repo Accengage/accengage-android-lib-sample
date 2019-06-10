@@ -30,8 +30,10 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.Iterator;
+import java.util.List;
 
 
 public class SignedInActivity extends BaseActivity {
@@ -165,12 +167,13 @@ public class SignedInActivity extends BaseActivity {
 
         providerList.append("Providers used: ");
 
-        if (user.getProviders() == null || user.getProviders().isEmpty()) {
+        List<? extends UserInfo> infos = user.getProviderData();
+        if (infos == null || infos.isEmpty()) {
             providerList.append("none");
         } else {
-            Iterator<String> providerIter = user.getProviders().iterator();
+            Iterator<? extends UserInfo> providerIter = infos.iterator();
             while (providerIter.hasNext()) {
-                String provider = providerIter.next();
+                String provider = providerIter.next().getProviderId();
                 if (GoogleAuthProvider.PROVIDER_ID.equals(provider)) {
                     providerList.append("Google");
                 } else if (FacebookAuthProvider.PROVIDER_ID.equals(provider)) {
